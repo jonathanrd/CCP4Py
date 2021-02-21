@@ -116,26 +116,75 @@ class refmac:
 
 import argparse
 
-parser = argparse.ArgumentParser()
-parser.add_argument("--pdb", metavar="input.pdb", type=ascii, required=True, help="PDB input")
-parser.add_argument("--mtz", metavar="input.mtz", type=ascii, required=True, help="MTZ input")
-parser.add_argument("--cycles", metavar="10",
+parser = argparse.ArgumentParser(prog='refmac.py', usage='%(prog)s [options]')
+
+optional = parser._action_groups.pop()
+required = parser.add_argument_group('required arguments')
+
+required.add_argument("--pdb", metavar="input.pdb",
+                    type=ascii,
+                    required=True,
+                    help="PDB input file")
+
+required.add_argument("--mtz", metavar="input.mtz",
+                    type=ascii,
+                    required=True,
+                    help="MTZ input file")
+
+
+optional.add_argument("--cycles", metavar="10",
                     help="No. of cycles (Default: 10)",
                     type=int, default=10)
-parser.add_argument("--breset",
+
+optional.add_argument("--breset", metavar="30",
                     help="Reset B Factor at start to value",
                     type=int, default=None)
-parser.add_argument("--bref", help="B refinement (Default: ISOTropic)", type=str, choices=['OVER', 'ISOT', 'ANIS', 'MIXED'], default = 'ISOT')
-parser.add_argument("--mode", help="Refinement Mode (Default: HKRF - restrained)", type=str, default="HKRF", choices = ['HKRF', 'RIGID', 'TLSR'])
-parser.add_argument("--weight", metavar="0.5", help="Weight matrix (Default: 0.5)", type=float, default = None)
-parser.add_argument("--output", help="Outfile file name (Default: TIMESTAMP)", type=str, default = "timestamp")
-parser.add_argument("--showcommand", help="Show REFMAC commands", action="store_true")
-parser.add_argument("--coot", help="Open structure in Coot after refinement", action="store_true")
-parser.add_argument("--custom", help="Custom extra keywords", type=str, default = None)
-parser.add_argument("--libin", help="Add a dictionary", type=str, default = None)
-parser.add_argument("--tlsin", help="TLS definitions", type=str, default = None)
-parser.add_argument("-v", help="verbose", action="store_true")
 
+optional.add_argument("--bref",  metavar="ISOT",
+                    help="B refinement (Default: ISOT. Options: OVER, ISOT, ANIS, MIXED)",
+                    type=str,
+                    choices=['OVER', 'ISOT', 'ANIS', 'MIXED'],
+                    default = 'ISOT')
+
+optional.add_argument("--mode", metavar="HKRF",
+                    help="Refinement Mode (Default: HKRF. Options: HKRF, RIGID, TLSR)",
+                    type=str,
+                    default="HKRF",
+                    choices = ['HKRF', 'RIGID', 'TLSR'])
+
+optional.add_argument("--weight", metavar="0.5",
+                    help="Weight matrix (Default: Auto)",
+                    type=float,
+                    default = None) # Leave None for auto
+
+optional.add_argument("--output", metavar="name",
+                    help="Outfile file name (Default: YYMMDD-HHMMSS-refmac)",
+                    type=str,
+                    default = "timestamp")
+
+optional.add_argument("--showcommand",
+                    help="Print the full refmac command",
+                    action="store_true")
+
+optional.add_argument("--coot",
+                    help="Run Coot after refinement",
+                    action="store_true")
+
+optional.add_argument("--custom",
+                    help="Pass custom keywords to refmac",
+                    type=str, default = None)
+
+optional.add_argument("--libin",
+                    help="Add a dictionary",
+                    type=str, default = None)
+
+optional.add_argument("--tlsin",
+                    help="TLS definitions",
+                    type=str, default = None)
+
+optional.add_argument("-v","--verbose", help="Verbose", action="store_true")
+
+parser._action_groups.append(optional)
 
 # If running directly (not imported)
 if __name__ == "__main__":
