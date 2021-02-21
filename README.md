@@ -8,7 +8,15 @@ Currently supports:
 - refmac
 
 # Installation
-TBC
+
+```
+# Clone this repo (for example to your user folder)
+cd ~/
+git clone https://github.com/jonathanrd/CCP4Py.git
+
+# Add the following to your .bashrc (Linux) or .bash_profile (Mac)
+export PATH=/Users/YourUserFolder/CCP4Py/bin:$PATH
+```
 
 # Usage
 
@@ -72,8 +80,8 @@ required arguments:
 
 optional arguments:
   -h, --help           show this help message and exit
-  --mtzout output.mtz  MTZ output file (Default: YYMMDD-HHMMSS-pointless.mtz)
-  --logout output.log  Log filename (Default: YYMMDD-HHMMSS-pointless.log)
+  --mtzout output.mtz  MTZ output file (Default: YYMMDD-HHMMSS-aimless.mtz)
+  --logout output.log  Log filename (Default: YYMMDD-HHMMSS-aimless.log)
   --reshigh RESHIGH    High resolution limit
   --showcommand        Show AIMLESS command
   -v, --verbose        Verbose
@@ -94,8 +102,8 @@ required arguments:
 
 optional arguments:
   -h, --help           show this help message and exit
-  --mtzout output.mtz  MTZ output file (Default: YYMMDD-HHMMSS-pointless.mtz)
-  --logout output.log  Log filename (Default: YYMMDD-HHMMSS-pointless.log)
+  --mtzout output.mtz  MTZ output file (Default: YYMMDD-HHMMSS-ctruncate.mtz)
+  --logout output.log  Log filename (Default: YYMMDD-HHMMSS-ctruncate.log)
   --showcommand        Show AIMLESS command
   -v, --verbose        Verbose
 ```
