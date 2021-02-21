@@ -85,11 +85,11 @@ required.add_argument("--mtz", metavar="input.mtz",
 
 optional.add_argument("--mtzout", metavar="output.mtz",
                     type=ascii,
-                    help="MTZ output file (Default: YYMMDD-HHMMSS-pointless.mtz)")
+                    help="MTZ output file (Default: YYMMDD-HHMMSS-aimless.mtz)")
 
 optional.add_argument("--logout", metavar="output.log",
                     type=ascii,
-                    help="Log filename (Default: YYMMDD-HHMMSS-pointless.log)")
+                    help="Log filename (Default: YYMMDD-HHMMSS-aimless.log)")
 
 optional.add_argument("--reshigh",
                     help="High resolution limit",
