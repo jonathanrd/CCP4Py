@@ -17,16 +17,16 @@ TBC
 pointless.py --mtz integrated.mtz --mtzout sorted.mtz
 
 # Scale
-aimless.py --mtz sorted.mtz --mtzout aimless.mtz --reshigh 1.8
+aimless.py --mtz sorted.mtz --mtzout scaled.mtz --reshigh 1.8
 
 # Intensities to Amplitudes
-ctruncate.py --mtz aimless.mtz --mtzout truncate.mtz
+ctruncate.py --mtz scaled.mtz --mtzout truncate.mtz
 
 # Generate free set
-uniqueify -p 0.05 truncated.mtz free2.mtz
+uniqueify -p 0.05 truncate.mtz free.mtz
 
 # Refine a model
-refmac.py --pdb model.pdb --mtz data.mtz -v
+refmac.py --pdb model.pdb --mtz free.mtz --coot
 ```
 
 
