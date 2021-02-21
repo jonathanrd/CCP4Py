@@ -1,11 +1,7 @@
 # CCP4Py
 Python wrappers for CCP4 programs.
 
-Currently supports:
-- pointless
-- aimless
-- ctruncate
-- refmac
+Currently supports: **pointless**, **aimless**, **ctruncate**, **phaser**, and **refmac**.
 
 # Installation
 
@@ -27,7 +23,7 @@ pointless.py --mtz integrated.mtz --mtzout sorted.mtz
 # Scale
 aimless.py --mtz sorted.mtz --mtzout scaled.mtz --reshigh 1.8
 
-# Intensities to Amplitudes
+# Intensities to amplitudes
 ctruncate.py --mtz scaled.mtz --mtzout truncate.mtz
 
 # Generate free set
@@ -36,20 +32,21 @@ uniqueify -p 0.05 truncate.mtz free.mtz
 # Molecular replacement
 phaser.py --pdb model.pdb --mtz free.mtz
 
-# Refine a model
+# Refine the model and open coot
 refmac.py --pdb phaser.1.pdb --mtz free.mtz --coot
 ```
 
 
 
+## For individual wrapper usage see below
 
-## pointless.py
-Example usage and output:
+### pointless.py
 ```
 pointless.py --mtz integrated.mtz --mtzout sorted.mtz
 ```
 
 Currently, pointless.py supports the following options:
+
 ```
 usage: pointless.py [options]
 
@@ -68,11 +65,11 @@ optional arguments:
 
 
 
-## aimless.py
-Example usage and output:
+### aimless.py
 ```
 aimless.py --mtz sorted.mtz --mtzout aimless.mtz --reshigh 1.8
 ```
+
 Currently, pointless.py supports the following options:
 
 ```
@@ -90,12 +87,12 @@ optional arguments:
   -v, --verbose        Verbose
 ```
 
-## ctruncate.py
-Example usage and output:
+### ctruncate.py
 ```
 ctruncate.py --mtz aimless.mtz --mtzout truncate.mtz
 ```
-Currently, pointless.py supports the following options:
+
+Currently, ctruncate.py supports the following options:
 
 ```
 usage: ctruncate.py [options]
@@ -112,12 +109,11 @@ optional arguments:
 ```
 
 
-## phaser.py
-Example usage and output:
-
+### phaser.py
 ```
 phaser.py --pdb model.pdb --mtz free.mtz
 ```
+
 Currently, phaser.py supports the following options:
 ```
 usage: phaser.py [options]
@@ -140,9 +136,7 @@ optional arguments:
 
 
 
-## refmac.py
-
-Example usage and output:
+### refmac.py
 ```
 refmac.py --pdb model.pdb --mtz data.mtz -v
 
