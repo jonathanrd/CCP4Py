@@ -33,8 +33,11 @@ ctruncate.py --mtz scaled.mtz --mtzout truncate.mtz
 # Generate free set
 uniqueify -p 0.05 truncate.mtz free.mtz
 
+# Molecular replacement
+phaser.py --pdb model.pdb --mtz free.mtz
+
 # Refine a model
-refmac.py --pdb model.pdb --mtz free.mtz --coot
+refmac.py --pdb phaser.1.pdb --mtz free.mtz --coot
 ```
 
 
@@ -109,6 +112,30 @@ optional arguments:
 ```
 
 
+## phaser.py
+Example usage and output:
+
+```
+phaser.py --pdb model.pdb --mtz free.mtz
+```
+Currently, phaser.py supports the following options:
+```
+usage: phaser.py [options]
+
+required arguments:
+  --pdb input.pdb      PDB input file
+  --mtz input.mtz      MTZ input file
+
+optional arguments:
+  -h, --help           show this help message and exit
+  --log LOG            Log filename
+  --output OUTPUT      Output suffix
+  --identity IDENTITY  Model identity
+  --totalmw TOTALMW    Composition MW
+  --nmol NMOL          No. of mol in asu (Default: 1)
+  --showcommand        Show phaser command
+  -v, --verbose        Verbose
+```
 
 
 
