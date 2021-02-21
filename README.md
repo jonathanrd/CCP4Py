@@ -1,16 +1,18 @@
 # CCP4Py
-Python wrappers for CCP4 programs.
+Python wrappers for CCP4 programs. Each can be run directly from the command line or called from within a python script or pipeline.
 
 Currently supports: **pointless**, **aimless**, **ctruncate**, **phaser**, and **refmac**.
 
 # Installation
-
+Requires [CCP4](http://www.ccp4.ac.uk/download/)
 ```
-# Clone this repo (for example to your user folder)
+# Clone this repo to your user folder
 cd ~/
 git clone https://github.com/jonathanrd/CCP4Py.git
+```
 
-# Add the following to your .bashrc (Linux) or .bash_profile (Mac)
+Add the following to your .bashrc (Linux) or .bash_profile (Mac)
+```
 export PATH=/Users/YourUserFolder/CCP4Py/bin:$PATH
 ```
 
