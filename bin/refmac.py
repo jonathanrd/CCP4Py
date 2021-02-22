@@ -3,7 +3,7 @@
 class refmac:
     ''' Refmac5 Wrapper '''
 
-    def __init__(self,pdb, mtz, mode = "HKRF", cycles = 10,bref = "ISOT",weight = None, showcommand=False, outputfilename = "timestamp", coot=False, breset=None, verbose=False, custom=None, libin=None, tlsin=None):
+    def __init__(self,pdb, mtz, mode = "HKRF", cycles = 10,bref = "ISOT",weight = None, showcommand=False, outputfilename = None, coot=False, breset=None, verbose=False, custom=None, libin=None, tlsin=None):
 
         # Generate timestamp
         import datetime
@@ -24,20 +24,23 @@ class refmac:
         self.libin = libin
         self.tlsin = tlsin
 
-        # Setup the output file names, use timestamp if not set
-        self.outputfilename = outputfilename
-        if (self.outputfilename == "timestamp"): self.outputfilename = timestamp+"-refmac"
-
-        if (self.verbose): print("Running Refmac..")
+        # Output filename, use timestamp if not set
+        if (outputfilename):
+            self.outputfilename = outputfilename
+        else:
+            self.outputfilename = timestamp+"-refmac"
 
         # Start the log file
         import sys
         log = open(self.outputfilename+".log", "w")
         log.write("Refmac run through python wrapper using command:\n\n")
-        log.write("refmacwrapper.py "+(" ".join(sys.argv[1:]))+"\n\n")
+        log.write("refmac.py "+(" ".join(sys.argv[1:]))+"\n\n")
         log.close()
-        if (self.verbose): print("Log file at: "+self.outputfilename+".log")
 
+        # Print to terminal
+        if (self.verbose):
+            print("Running Refmac..")
+            print("Log file at: "+self.outputfilename+".log")
 
         # Run mtzinfo to get list of column headers
         import subprocess,re
@@ -71,9 +74,14 @@ class refmac:
         # Is there an extra dictionary?
         if (self.libin): cmd+= f"LIBIN {self.libin} "
 
-        cmd += (f"<< eof >>{self.outputfilename}.log\n"
-        f"ncyc {self.cycles}\n"
-        f"labin  FP=F SIGFP=SIGF {self.label_free}\n")
+        # Log output
+        cmd += f"<< eof >>{self.outputfilename}.log\n"
+
+        # Number of cycles
+        cmd += f"ncyc {self.cycles}\n"
+
+        # Set the input labels
+        cmd += f"labin  FP=F SIGFP=SIGF {self.label_free}\n"
 
         # Have the B factors been reset?
         if (self.breset != None): cmd+= "BFACTOR SET " + str(self.breset) +"\n"
@@ -174,7 +182,7 @@ optional.add_argument("--weight", metavar="0.5",
 optional.add_argument("--output", metavar="name",
                     help="Outfile file name (Default: YYMMDD-HHMMSS-refmac)",
                     type=str,
-                    default = "timestamp")
+                    default = None)
 
 optional.add_argument("--showcommand",
                     help="Print the full refmac command",
