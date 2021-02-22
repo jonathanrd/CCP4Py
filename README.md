@@ -1,5 +1,6 @@
-# CCP4Py
-Python wrappers for CCP4 programs. Each can be run directly from the command line or called from within a python script or pipeline.
+<center><img src="CCP4Py.png" alt="CCP4Py Logo" width="800"/></center>
+
+Unofficial python wrappers for CCP4 programs. Designed to make the task of running CCP4 programs from the command line as simple as possible. Not designed to cover every option or use case!
 
 Currently supports: **pointless**, **aimless**, **ctruncate**, **phaser**, and **refmac**.
 
@@ -16,7 +17,7 @@ Add the following to your .bashrc (Linux) or .bash_profile (Mac)
 export PATH=/Users/YourUserFolder/CCP4Py/bin:$PATH
 ```
 
-# Usage
+# Basic Usage
 
 ```
 # Check spacegroup and sort
@@ -39,121 +40,10 @@ refmac.py --pdb phaser.1.pdb --mtz free.mtz --coot
 ```
 
 
-
-## For individual wrapper usage see below
-
-### pointless.py
+**For all options the wrapper with the -h flag:**
 ```
-pointless.py --mtz integrated.mtz --mtzout sorted.mtz
-```
+refmac.py -h
 
-Currently, pointless.py supports the following options:
-
-```
-usage: pointless.py [options]
-
-required arguments:
-  --mtz input.mtz      MTZ input file
-
-optional arguments:
-  -h, --help           show this help message and exit
-  --mtzout output.mtz  MTZ output file (Default: YYMMDD-HHMMSS-pointless.mtz)
-  --logout output.log  Log filename (Default: YYMMDD-HHMMSS-pointless.log)
-  --spacegroup P1      Input a known spacegroup
-  --showcommand        Show AIMLESS command
-  -v, --verbose        Verbose
-```
-
-
-
-
-### aimless.py
-```
-aimless.py --mtz sorted.mtz --mtzout aimless.mtz --reshigh 1.8
-```
-
-Currently, pointless.py supports the following options:
-
-```
-usage: aimless.py [options]
-
-required arguments:
-  --mtz input.mtz      MTZ input file
-
-optional arguments:
-  -h, --help           show this help message and exit
-  --mtzout output.mtz  MTZ output file (Default: YYMMDD-HHMMSS-aimless.mtz)
-  --logout output.log  Log filename (Default: YYMMDD-HHMMSS-aimless.log)
-  --reshigh RESHIGH    High resolution limit
-  --showcommand        Show AIMLESS command
-  -v, --verbose        Verbose
-```
-
-### ctruncate.py
-```
-ctruncate.py --mtz aimless.mtz --mtzout truncate.mtz
-```
-
-Currently, ctruncate.py supports the following options:
-
-```
-usage: ctruncate.py [options]
-
-required arguments:
-  --mtz input.mtz      MTZ input file
-
-optional arguments:
-  -h, --help           show this help message and exit
-  --mtzout output.mtz  MTZ output file (Default: YYMMDD-HHMMSS-ctruncate.mtz)
-  --logout output.log  Log filename (Default: YYMMDD-HHMMSS-ctruncate.log)
-  --showcommand        Show AIMLESS command
-  -v, --verbose        Verbose
-```
-
-
-### phaser.py
-```
-phaser.py --pdb model.pdb --mtz free.mtz
-```
-
-Currently, phaser.py supports the following options:
-```
-usage: phaser.py [options]
-
-required arguments:
-  --pdb input.pdb      PDB input file
-  --mtz input.mtz      MTZ input file
-
-optional arguments:
-  -h, --help           show this help message and exit
-  --log LOG            Log filename
-  --output OUTPUT      Output suffix
-  --identity IDENTITY  Model identity
-  --totalmw TOTALMW    Composition MW
-  --nmol NMOL          No. of mol in asu (Default: 1)
-  --showcommand        Show phaser command
-  -v, --verbose        Verbose
-```
-
-
-
-
-### refmac.py
-```
-refmac.py --pdb model.pdb --mtz data.mtz -v
-
-Running Refmac..
-Log file at: 210221-140739-refmac.log
-       R factor    0.2524   0.2500
-         R free    0.3035   0.3074
- Rms BondLength    0.0090   0.0089
-  Rms BondAngle    1.6879   1.6758
-
-coot --pdb 210221-140739-refmac.pdb --auto 210221-140739-refmac.mtz
-```
-
-Currently, refmac.py supports the following options:
-```
 usage: refmac.py [options]
 
 required arguments:
@@ -174,4 +64,5 @@ optional arguments:
   --libin LIBIN    Add a dictionary
   --tlsin TLSIN    TLS definitions
   -v, --verbose    Verbose
+
 ```
