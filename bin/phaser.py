@@ -18,15 +18,20 @@ class phaser:
         self.identity=identity
         self.pdbin=pdbin
 
-        self.totalmw=totalmw
+        # Is the molecular weight given by the user?
+        if(totalmw):
+            self.totalmw=totalmw
+        else: # No it's not given. Let's calculate it from the PDB.
+            import subprocess,re
+            s = subprocess.check_output("rwcontents XYZIN "+self.pdbin+"<<EOF\nEnd\nEOF", shell=True)
+            for line in s.decode('ascii').split("\n"):
+                if (re.match("^ Molecular Weight of protein:.*", line)):
+                    self.totalmw = line.split(":")[1].strip()
+
         self.nmol=nmol
 
         if (self.output == None): self.output = f"{timestamp}-phaser"
         if (self.log == None): self.log = f"{timestamp}-phaser.log"
-
-
-
-        if (self.verbose): print("Running phaser..")
 
         # Start the log file
         import sys
@@ -34,7 +39,11 @@ class phaser:
         log.write("phaser run through python wrapper using command:\n\n")
         log.write("phaserwrap.py "+(" ".join(sys.argv[1:]))+"\n\n")
         log.close()
-        if (self.verbose): print("Log file at: "+self.log)
+
+        if (self.verbose):
+            print("Running phaser..")
+            print("Log file at: "+self.log)
+            print("PDB Total MW: "+self.totalmw)
 
 
 
@@ -107,7 +116,7 @@ optional.add_argument("--identity",
                     type=float, default=50.0)
 optional.add_argument("--totalmw",
                     help="Composition MW",
-                    type=int, default=35000)
+                    type=int, default=None)
 optional.add_argument("--nmol",
                     help="No. of mol in asu (Default: 1)",
                     type=int, default=1)
