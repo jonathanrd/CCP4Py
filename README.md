@@ -40,7 +40,7 @@ refmac.py --pdb phaser.1.pdb --mtz free.mtz --coot
 ```
 
 
-**For all options the wrapper with the -h flag:**
+**For all options run the wrapper with the -h flag:**
 ```
 refmac.py -h
 
