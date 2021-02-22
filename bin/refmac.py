@@ -39,6 +39,20 @@ class refmac:
         if (self.verbose): print("Log file at: "+self.outputfilename+".log")
 
 
+        # Run mtzinfo to get list of column headers
+        import subprocess,re
+        s = subprocess.check_output("mtzinfo "+self.mtz, shell=True)
+        for line in s.decode('ascii').split("\n"):
+            if (re.match("^LABELS.*", line)):
+                self.labels = line.split()[1:]
+
+        # Using common free r labels, find and set the Free R label
+        default_free = ['FREE', 'RFREE', 'FREER', 'FreeR_flag']
+        try:
+            self.label_free = "FREE="+[i for i in self.labels if i in default_free][0]
+        except:
+            self.label_free = ""
+
 
     def run(self):
         ''' Run it! '''
@@ -59,7 +73,7 @@ class refmac:
 
         cmd += (f"<< eof >>{self.outputfilename}.log\n"
         f"ncyc {self.cycles}\n"
-        "labin  FP=F SIGFP=SIGF FREE=FreeR_flag\n")
+        f"labin  FP=F SIGFP=SIGF {self.label_free}\n")
 
         # Have the B factors been reset?
         if (self.breset != None): cmd+= "BFACTOR SET " + str(self.breset) +"\n"
