@@ -45,7 +45,7 @@ ctruncate.py --mtz scaled.mtz --mtzout truncate.mtz
 uniqueify -p 0.05 truncate.mtz free.mtz
 
 # Molecular replacement
-phaser.py --pdb model.pdb --mtz free.mtz
+phaser.py --pdb model.pdb --mtz free.mtz --output phaser
 
 # Refine the model and open coot
 refmac.py --pdb phaser.1.pdb --mtz free.mtz --coot
@@ -65,18 +65,18 @@ required arguments:
 
 optional arguments:
   -h, --help       show this help message and exit
-  --cycles 10      No. of cycles (Default: 10)
-  --breset 30      Reset B Factor at start to value
-  --bref ISOT      B refinement (Default: ISOT. Options: OVER, ISOT, ANIS, MIXED)
-  --mode HKRF      Refinement Mode (Default: HKRF. Options: HKRF, RIGID, TLSR)
-  --labels normal  Do you want to use SAD or experimental phasing data? (Default:
-                   normal. Options: normal, sad, hl)
-  --weight 0.5     Weight matrix (Default: Auto)
-  --output         Outfile file name (Default: YYMMDD-HHMMSS-refmac)
+  --cycles 10      No. of cycles [10]
+  --breset 30      Reset B Factor at start to specified value
+  --bref ISOT      B refinement (OVER, [ISOT], ANIS, MIXED)
+  --mode HKRF      Refinement Mode ([HKRF], RIGID, TLSR)
+  --labels normal  Refine with SAD or exp. data ([normal], sad, hl)
+  --weight 0.5     Weight matrix [auto]
+  --output         Outfile file name [YYMMDD-HHMMSS-refmac]
   --showcommand    Print the full refmac command and stop.
-  --coot           Run Coot after refinement
-  --custom CUSTOM  Pass custom keywords to refmac
-  --libin LIBIN    Add a dictionary
-  --tlsin TLSIN    TLS definitions
+  --logview        Run CCP4 logview while refmac is running.
+  --coot           Run Coot after refinement.
+  --custom CUSTOM  Pass custom keywords to refmac.
+  --libin LIBIN    Add a dictionary.
+  --tlsin TLSIN    TLS definitions.
   -v, --verbose    Verbose
 ```
