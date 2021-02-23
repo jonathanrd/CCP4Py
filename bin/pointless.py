@@ -3,7 +3,7 @@
 class pointless:
     ''' Pointless Wrapper '''
 
-    def __init__(self,mtzin,mtzout=None,spacegroup=None, verbose=False, showcommand=False, log=None):
+    def __init__(self,mtzin,mtzout=None,spacegroup=None, verbose=False, showcommand=False, log=None, custom = None):
 
         # Generate timestamp
         import datetime
@@ -16,6 +16,7 @@ class pointless:
         self.mtzin = mtzin
         self.mtzout = mtzout
         self.log = log
+        self.custom = custom
 
         if (self.mtzout == None): self.mtzout = f"{timestamp}-pointless.mtz"
         if (self.log == None):    self.log = f"{timestamp}-pointless.log"
@@ -45,7 +46,12 @@ class pointless:
         cmd += (f"<< eof >>{self.log}\n")
 
         # Set a high resolution limit
-        if (self.spacegroup): cmd += f"spacegroup {self.spacegroup}\n"
+        if (self.spacegroup):
+            cmd += f"spacegroup {self.spacegroup}\n"
+
+        # Any extra custom keywords?
+        if self.custom:
+            cmd+= str(self.custom) + "\n"
 
         # End the command entry
         cmd += ("\n"
@@ -96,6 +102,10 @@ optional.add_argument("--spacegroup", metavar="P1",
 
 optional.add_argument("--showcommand", help="Show AIMLESS command", action="store_true")
 
+optional.add_argument("--custom",
+                    help = "Pass custom keywords to pointless.",
+                    type = str, default = None)
+
 
 optional.add_argument("-v","--verbose", help="Verbose", action="store_true")
 
@@ -108,7 +118,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     # Pass args to the main class
-    program = pointless(mtzin=args.mtz, mtzout=args.mtzout, verbose=args.verbose, showcommand=args.showcommand, spacegroup=args.spacegroup, log=args.logout)
+    program = pointless(mtzin=args.mtz, mtzout=args.mtzout, verbose=args.verbose, showcommand=args.showcommand, spacegroup=args.spacegroup, log=args.logout, custom=args.custom)
 
     # Run the main class
     program.run()
