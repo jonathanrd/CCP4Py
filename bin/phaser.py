@@ -81,14 +81,10 @@ class phaser:
             import re
             shakes = open(self.log, "r")
             for line in shakes:
-                if re.match("** Solution written to PDB file:.+", line):
-                    print ("       "+line.strip())
-                if re.match("** Solution written to MTZ file:.+", line):
-                    print ("         "+line.strip())
-                if re.match("     Rms BondLength    .+", line):
-                    print (" "+line.strip())
-                if re.match("      Rms BondAngle    .+", line):
-                    print ("  "+line.strip())
+                if re.match("\*\* Solution written to PDB file:.*", line):
+                    print (line.strip())
+                if re.match("\*\* Solution written to MTZ file:.*", line):
+                    print (line.strip())
 
 
 
