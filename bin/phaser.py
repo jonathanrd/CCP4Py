@@ -1,9 +1,11 @@
 #!/usr/bin/env python3
 
 class phaser:
-    ''' Pointless Wrapper '''
+    ''' Phaser Wrapper '''
 
-    def __init__(self,mtzin,showcommand=False, log=None, verbose=False, output=None, identity=50,pdbin=None,totalmw=None, nmol=1, logview = None):
+    def __init__(self, mtzin, showcommand = False, log = None, verbose = False,
+    output = None, identity = 50, pdbin = None, totalmw = None, nmol = 1,
+    logview = None, custom = None):
 
         # Generate timestamp
         import datetime
@@ -18,50 +20,42 @@ class phaser:
         self.identity=identity
         self.pdbin=pdbin
         self.logview = logview
+        self.nmol = nmol
+        self.custom = custom
 
         # Is the molecular weight given by the user?
-        if(totalmw):
-            self.totalmw=totalmw
+        if totalmw:
+            self.totalmw = totalmw
         else: # No it's not given. Let's calculate it from the PDB.
             import subprocess,re
-            s = subprocess.check_output("rwcontents XYZIN "+self.pdbin+"<<EOF\nEnd\nEOF", shell=True)
+            s = subprocess.check_output("rwcontents XYZIN " + self.pdbin + "<<EOF\nEnd\nEOF", shell = True)
             for line in s.decode('ascii').split("\n"):
                 if (re.match("^ Molecular Weight of protein:.*", line)):
                     self.totalmw = line.split(":")[1].strip()
 
-        self.nmol=nmol
+        if (self.output == None):
+            self.output = f"{timestamp}-phaser"
 
-        if (self.output == None): self.output = f"{timestamp}-phaser"
-        if (self.log == None): self.log = f"{timestamp}-phaser.log"
+        if (self.log == None):
+            self.log = f"{timestamp}-phaser.log"
 
         # Run mtzinfo to get list of column headers
-        import subprocess,re
+        import subprocess, re
         s = subprocess.check_output("mtzinfo " + self.mtzin, shell = True)
         for line in s.decode('ascii').split("\n"):
             if re.match("^LABELS.*", line):
                 self.labels = line.split()[1:]
 
         # Set the input MTZ labels
-        self.label_fp = "FP="+[i for i in self.labels if i in ['F', 'FP'] ][0]
-        self.label_sigfp = "SIGFP="+[i for i in self.labels if i in ['SIGF', 'SIGFP'] ][0]
+        self.label_fp = "FP=" + [i for i in self.labels if i in ['F', 'FP'] ][0]
+        self.label_sigfp = "SIGFP=" + [i for i in self.labels if i in ['SIGF', 'SIGFP'] ][0]
 
-        # Start the log file
-        import sys
-        log = open(self.log, "w")
-        log.write("phaser run through python wrapper using command:\n\n")
-        log.write("phaserwrap.py "+(" ".join(sys.argv[1:]))+"\n\n")
-        log.close()
-
-        if (self.verbose):
-            print("Running phaser..")
-            print("Log file at: "+self.log)
-            print("PDB Total MW: "+self.totalmw)
 
 
 
     def run(self):
         ''' Run it! '''
-        import subprocess
+        import subprocess, sys
 
         # Setup the command options
         cmd = ("phaser "
@@ -75,14 +69,30 @@ class phaser:
         f"SEARch ENSEmble model NUM {self.nmol}\n"
         f"ROOT {self.output}\n")
 
-        # End the command entry
-        cmd += ("\n"
-        "eof")
+        # Any extra custom keywords?
+        if self.custom:
+            cmd+= str(self.custom) + "\n"
 
+        # End the command entry
+        cmd += ("\neof")
 
 
         # Print the final command to terminal
-        if (self.showcommand == True): print(cmd)
+        if (self.showcommand == True):
+            print(cmd)
+            sys.exit()
+
+        # Start the log file
+        log = open(self.log, "w")
+        log.write("phaser run through python wrapper using command:\n\n")
+        log.write("phaserwrap.py "+(" ".join(sys.argv[1:]))+"\n\n")
+        log.close()
+
+        if self.verbose:
+            print("Running phaser..")
+            print("Log file at: "+self.log)
+            print("PDB Total MW: "+self.totalmw)
+
 
         # Show logview?
         if self.logview:
@@ -90,11 +100,11 @@ class phaser:
             stdout = subprocess.DEVNULL, stderr = subprocess.DEVNULL)
 
         # Run the command
-        s = subprocess.check_output(cmd, shell=True)
+        s = subprocess.check_output(cmd, shell = True)
         self.result = s.decode('ascii')
 
         # Output the final refinement stats to the terminal
-        if (self.verbose):
+        if self.verbose:
             import re
             shakes = open(self.log, "r")
             for line in shakes:
@@ -120,31 +130,40 @@ required.add_argument("--mtz", metavar="input.mtz",
                     required=True,
                     help="MTZ input file")
 
-optional.add_argument("--log", help="Log filename")
+optional.add_argument("--log", metavar = "",
+                    help = "Log filename [YYMMDD-HHMMSS-phaser]")
 
-optional.add_argument("--output",
-                    help="Output suffix",
-                    type=str, default="phaser")
+optional.add_argument("--output", metavar = "",
+                    help = "Output suffix [YYMMDD-HHMMSS-phaser]",
+                    type = str, default = None)
 
-optional.add_argument("--identity",
-                    help="Model identity",
-                    type=float, default=50.0)
+optional.add_argument("--identity", metavar = "",
+                    help = "Model identity [50.0]",
+                    type = float, default = 50.0)
 
-optional.add_argument("--totalmw",
-                    help="Composition MW",
-                    type=int, default=None)
+optional.add_argument("--totalmw", metavar = "",
+                    help = "Composition MW [auto]",
+                    type = int, default = None)
 
-optional.add_argument("--nmol",
-                    help="No. of mol in asu (Default: 1)",
-                    type=int, default=1)
+optional.add_argument("--nmol", metavar = "",
+                    help = "No. of PDB copies in ASU [1]",
+                    type = int, default = 1)
 
 optional.add_argument("--logview",
                     help = "Run CCP4 logview while phaser is running.",
                     action = "store_true")
 
-optional.add_argument("--showcommand", help="Show phaser command", action="store_true")
+optional.add_argument("--custom",
+                    help = "Pass custom keywords to phaser.",
+                    type = str, default = None)
 
-optional.add_argument("-v","--verbose", help="Verbose", action="store_true")
+optional.add_argument("--showcommand",
+                    help="Show phaser command",
+                    action="store_true")
+
+optional.add_argument("-v", "--verbose",
+                    help = "Verbose",
+                    action = "store_true")
 
 parser._action_groups.append(optional)
 
@@ -155,7 +174,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     # Pass args to the main class
-    program = phaser(mtzin=args.mtz,verbose=args.verbose, showcommand=args.showcommand, log=args.log,output=args.output, identity=args.identity,pdbin=args.pdb,totalmw=args.totalmw, nmol=args.nmol, logview = args.logview)
+    program = phaser(mtzin = args.mtz, verbose = args.verbose, showcommand = args.showcommand, log = args.log, output = args.output, identity = args.identity, pdbin = args.pdb, totalmw = args.totalmw, nmol = args.nmol, logview = args.logview, custom = args.custom)
 
     # Run the main class
     program.run()
