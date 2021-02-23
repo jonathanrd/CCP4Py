@@ -3,7 +3,7 @@
 class refmac:
     ''' Refmac5 Wrapper '''
 
-    def __init__(self,pdb, mtz, mode = "HKRF", cycles = 10,bref = "ISOT",weight = None, showcommand=False, outputfilename = None, coot=False, breset=None, verbose=False, custom=None, libin=None, tlsin=None, labeltype="normal"):
+    def __init__(self,pdb, mtz, mode = "HKRF", cycles = 10,bref = "ISOT",weight = None, showcommand=False, outputfilename = None, coot=False, breset=None, verbose=False, custom=None, libin=None, tlsin=None, labeltype="normal", logview=None):
 
         # Generate timestamp
         import datetime
@@ -24,6 +24,7 @@ class refmac:
         self.libin = libin
         self.tlsin = tlsin
         self.labeltype = labeltype
+        self.logview = logview
 
         # Output filename, use timestamp if not set
         if (outputfilename):
@@ -124,6 +125,10 @@ class refmac:
         log.write("refmac.py "+(" ".join(sys.argv[1:]))+"\n\n")
         log.close()
 
+        # Show logview?
+        if (self.logview):
+            subprocess.Popen(["logview",self.outputfilename+".log"],stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL)
+
         # Print to terminal
         if (self.verbose):
             print("Running Refmac..")
@@ -214,6 +219,10 @@ optional.add_argument("--showcommand",
                     help="Print the full refmac command and stop.",
                     action="store_true")
 
+optional.add_argument("--logview",
+                    help="Run CCP4 logview while refmac is running",
+                    action="store_true")
+
 optional.add_argument("--coot",
                     help="Run Coot after refinement",
                     action="store_true")
@@ -241,7 +250,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     # Pass args to the main class
-    program = refmac(pdb = args.pdb, cycles = args.cycles, mtz = args.mtz, bref=args.bref, weight=args.weight, showcommand=args.showcommand, mode=args.mode, outputfilename=args.output, coot=args.coot, breset=args.breset, verbose=args.verbose, libin=args.libin, tlsin=args.tlsin, labeltype=args.labels)
+    program = refmac(pdb = args.pdb, cycles = args.cycles, mtz = args.mtz, bref=args.bref, weight=args.weight, showcommand=args.showcommand, mode=args.mode, outputfilename=args.output, coot=args.coot, breset=args.breset, verbose=args.verbose, libin=args.libin, tlsin=args.tlsin, labeltype=args.labels, logview=args.logview)
 
     # Run the main class
     program.run()
