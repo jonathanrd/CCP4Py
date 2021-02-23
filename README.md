@@ -25,6 +25,12 @@ git pull
 
 # Basic Usage
 
+### Refining a model
+```
+refmac.py --pdb model.pdb --mtz data.mtz -v
+```
+
+### Going from integrated data to a refined model
 ```
 # Check spacegroup and sort
 pointless.py --mtz integrated.mtz --mtzout sorted.mtz
@@ -49,7 +55,7 @@ logview 210222-221251-refmac.log
 ```
 
 
-**For all options run the wrapper with the -h flag:**
+### For all options run any wrapper with the -h flag:
 ```
 usage: refmac.py [options]
 
