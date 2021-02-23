@@ -250,7 +250,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     # Pass args to the main class
-    program = refmac(pdb = args.pdb, cycles = args.cycles, mtz = args.mtz, bref=args.bref, weight=args.weight, showcommand=args.showcommand, mode=args.mode, outputfilename=args.output, coot=args.coot, breset=args.breset, verbose=args.verbose, libin=args.libin, tlsin=args.tlsin, labeltype=args.labels, logview=args.logview)
+    program = refmac(pdb = args.pdb, cycles = args.cycles, mtz = args.mtz, bref=args.bref, weight=args.weight, showcommand=args.showcommand, mode=args.mode, outputfilename=args.output, coot=args.coot, breset=args.breset, verbose=args.verbose, libin=args.libin, tlsin=args.tlsin, labeltype=args.labels, logview=args.logview, custom=args.custom)
 
     # Run the main class
     program.run()
