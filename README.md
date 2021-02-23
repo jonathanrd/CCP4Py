@@ -48,8 +48,6 @@ refmac.py --pdb phaser.1.pdb --mtz free.mtz --coot
 
 **For all options run the wrapper with the -h flag:**
 ```
-refmac.py -h
-
 usage: refmac.py [options]
 
 required arguments:
@@ -62,13 +60,14 @@ optional arguments:
   --breset 30      Reset B Factor at start to value
   --bref ISOT      B refinement (Default: ISOT. Options: OVER, ISOT, ANIS, MIXED)
   --mode HKRF      Refinement Mode (Default: HKRF. Options: HKRF, RIGID, TLSR)
+  --labels normal  Do you want to use SAD or experimental phasing data? (Default:
+                   normal. Options: normal, sad, hl)
   --weight 0.5     Weight matrix (Default: Auto)
-  --output name    Outfile file name (Default: YYMMDD-HHMMSS-refmac)
-  --showcommand    Print the full refmac command
+  --output         Outfile file name (Default: YYMMDD-HHMMSS-refmac)
+  --showcommand    Print the full refmac command and stop.
   --coot           Run Coot after refinement
   --custom CUSTOM  Pass custom keywords to refmac
   --libin LIBIN    Add a dictionary
   --tlsin TLSIN    TLS definitions
   -v, --verbose    Verbose
-
 ```

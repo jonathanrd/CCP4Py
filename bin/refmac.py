@@ -31,17 +31,6 @@ class refmac:
         else:
             self.outputfilename = timestamp+"-refmac"
 
-        # Start the log file
-        import sys
-        log = open(self.outputfilename+".log", "w")
-        log.write("Refmac run through python wrapper using command:\n\n")
-        log.write("refmac.py "+(" ".join(sys.argv[1:]))+"\n\n")
-        log.close()
-
-        # Print to terminal
-        if (self.verbose):
-            print("Running Refmac..")
-            print("Log file at: "+self.outputfilename+".log")
 
         # Run mtzinfo to get list of column headers
         import subprocess,re
@@ -123,7 +112,22 @@ class refmac:
 
 
         # Print the final command to terminal
-        if (self.showcommand == True): print(cmd)
+        if (self.showcommand == True):
+            print(cmd)
+            import sys
+            sys.exit()
+
+        # Start the log file
+        import sys
+        log = open(self.outputfilename+".log", "w")
+        log.write("Refmac run through python wrapper using command:\n\n")
+        log.write("refmac.py "+(" ".join(sys.argv[1:]))+"\n\n")
+        log.close()
+
+        # Print to terminal
+        if (self.verbose):
+            print("Running Refmac..")
+            print("Log file at: "+self.outputfilename+".log")
 
         # Run the command
         s = subprocess.check_output(cmd, shell=True)
@@ -191,7 +195,7 @@ optional.add_argument("--mode", metavar="HKRF",
                     choices = ['HKRF', 'RIGID', 'TLSR'])
 
 optional.add_argument("--labels", metavar="normal",
-                    help="Data labels (Default: normal. Options: normal, sad, hl)",
+                    help="Do you want to use SAD or experimental phasing data? (Default: normal. Options: normal, sad, hl)",
                     type=str,
                     default="normal",
                     choices = ['normal', 'sad', 'hl'])
@@ -201,13 +205,13 @@ optional.add_argument("--weight", metavar="0.5",
                     type=float,
                     default = None) # Leave None for auto
 
-optional.add_argument("--output", metavar="name",
+optional.add_argument("--output", metavar="",
                     help="Outfile file name (Default: YYMMDD-HHMMSS-refmac)",
                     type=str,
                     default = None)
 
 optional.add_argument("--showcommand",
-                    help="Print the full refmac command",
+                    help="Print the full refmac command and stop.",
                     action="store_true")
 
 optional.add_argument("--coot",
