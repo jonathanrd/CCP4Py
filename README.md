@@ -43,6 +43,9 @@ phaser.py --pdb model.pdb --mtz free.mtz
 
 # Refine the model and open coot
 refmac.py --pdb phaser.1.pdb --mtz free.mtz --coot
+
+# View the refmac log using the old CCP4 way
+logview 210222-221251-refmac.log
 ```
 
 
