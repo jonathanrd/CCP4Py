@@ -3,7 +3,7 @@
 class phaser:
     ''' Pointless Wrapper '''
 
-    def __init__(self,mtzin,showcommand=False, log=None, verbose=False, output=None, identity=50,pdbin=None,totalmw=None, nmol=1):
+    def __init__(self,mtzin,showcommand=False, log=None, verbose=False, output=None, identity=50,pdbin=None,totalmw=None, nmol=1, logview = None):
 
         # Generate timestamp
         import datetime
@@ -17,6 +17,7 @@ class phaser:
         self.output = output
         self.identity=identity
         self.pdbin=pdbin
+        self.logview = logview
 
         # Is the molecular weight given by the user?
         if(totalmw):
@@ -32,6 +33,17 @@ class phaser:
 
         if (self.output == None): self.output = f"{timestamp}-phaser"
         if (self.log == None): self.log = f"{timestamp}-phaser.log"
+
+        # Run mtzinfo to get list of column headers
+        import subprocess,re
+        s = subprocess.check_output("mtzinfo " + self.mtzin, shell = True)
+        for line in s.decode('ascii').split("\n"):
+            if re.match("^LABELS.*", line):
+                self.labels = line.split()[1:]
+
+        # Set the input MTZ labels
+        self.label_fp = "FP="+[i for i in self.labels if i in ['F', 'FP'] ][0]
+        self.label_sigfp = "SIGFP="+[i for i in self.labels if i in ['SIGF', 'SIGFP'] ][0]
 
         # Start the log file
         import sys
@@ -57,7 +69,7 @@ class phaser:
         f"TITLe MR\n"
         f"MODE MR_AUTO\n"
         f"HKLIn {self.mtzin}\n"
-        f"LABIn F=F SIGF=SIGF\n"
+        f"LABIn {self.label_fp} {self.label_sigfp}\n"
         f"ENSEmble model PDB {self.pdbin} IDENtity {self.identity}\n"
         f"COMPosition PROTein MW {self.totalmw} NUM 1\n"
         f"SEARch ENSEmble model NUM {self.nmol}\n"
@@ -71,6 +83,11 @@ class phaser:
 
         # Print the final command to terminal
         if (self.showcommand == True): print(cmd)
+
+        # Show logview?
+        if self.logview:
+            subprocess.Popen(["logview", self.log],
+            stdout = subprocess.DEVNULL, stderr = subprocess.DEVNULL)
 
         # Run the command
         s = subprocess.check_output(cmd, shell=True)
@@ -104,18 +121,26 @@ required.add_argument("--mtz", metavar="input.mtz",
                     help="MTZ input file")
 
 optional.add_argument("--log", help="Log filename")
+
 optional.add_argument("--output",
                     help="Output suffix",
                     type=str, default="phaser")
+
 optional.add_argument("--identity",
                     help="Model identity",
                     type=float, default=50.0)
+
 optional.add_argument("--totalmw",
                     help="Composition MW",
                     type=int, default=None)
+
 optional.add_argument("--nmol",
                     help="No. of mol in asu (Default: 1)",
                     type=int, default=1)
+
+optional.add_argument("--logview",
+                    help = "Run CCP4 logview while phaser is running.",
+                    action = "store_true")
 
 optional.add_argument("--showcommand", help="Show phaser command", action="store_true")
 
@@ -130,7 +155,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     # Pass args to the main class
-    program = phaser(mtzin=args.mtz,verbose=args.verbose, showcommand=args.showcommand, log=args.log,output=args.output, identity=args.identity,pdbin=args.pdb,totalmw=args.totalmw, nmol=args.nmol)
+    program = phaser(mtzin=args.mtz,verbose=args.verbose, showcommand=args.showcommand, log=args.log,output=args.output, identity=args.identity,pdbin=args.pdb,totalmw=args.totalmw, nmol=args.nmol, logview = args.logview)
 
     # Run the main class
     program.run()
