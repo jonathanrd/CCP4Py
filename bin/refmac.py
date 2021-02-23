@@ -3,7 +3,7 @@
 class refmac:
     ''' Refmac5 Wrapper '''
 
-    def __init__(self,pdb, mtz, mode = "HKRF", cycles = 10,bref = "ISOT",weight = None, showcommand=False, outputfilename = None, coot=False, breset=None, verbose=False, custom=None, libin=None, tlsin=None):
+    def __init__(self,pdb, mtz, mode = "HKRF", cycles = 10,bref = "ISOT",weight = None, showcommand=False, outputfilename = None, coot=False, breset=None, verbose=False, custom=None, libin=None, tlsin=None, labeltype="normal"):
 
         # Generate timestamp
         import datetime
@@ -23,6 +23,7 @@ class refmac:
         self.custom = custom
         self.libin = libin
         self.tlsin = tlsin
+        self.labeltype = labeltype
 
         # Output filename, use timestamp if not set
         if (outputfilename):
@@ -56,6 +57,16 @@ class refmac:
         except:
             self.label_free = ""
 
+        # Using common label names, find and set the correct label
+        if (self.labeltype == "normal" or self.labeltype == "hl"):
+            self.label_fp = "FP="+[i for i in self.labels if i in ['F', 'FP'] ][0]
+            self.label_sigfp = "SIGFP="+[i for i in self.labels if i in ['SIGF', 'SIGFP'] ][0]
+
+        if (self.labeltype == "sad"):
+            self.label_fplus = "F+="+[ i for i in self.labels if i in ['F+', 'F(+)'] ][0]
+            self.label_sigfplus = "SIGF+="+[ i for i in self.labels if i in ['SIGF+', 'SIGF(+)'] ][0]
+            self.label_fminus = "F-="+[ i for i in self.labels if i in ['F-', 'F(-)'] ][0]
+            self.label_sigfminus = "SIGF-="+[ i for i in self.labels if i in ['SIGF-', 'SIGF(-)'] ][0]
 
     def run(self):
         ''' Run it! '''
@@ -81,7 +92,12 @@ class refmac:
         cmd += f"ncyc {self.cycles}\n"
 
         # Set the input labels
-        cmd += f"labin  FP=F SIGFP=SIGF {self.label_free}\n"
+        if (self.labeltype == "normal"):
+            cmd += f"labin  {self.label_fp} {self.label_sigfp} {self.label_free}\n"
+        elif (self.labeltype == "sad"):
+            cmd += f"labin  {self.label_fplus} {self.label_sigfplus} {self.label_fminus} {self.label_sigfminus} {self.label_free}\n"
+        if (self.labeltype == "hl"):
+            cmd += f"labin  {self.label_fp} {self.label_sigfp} HLA=HLA HLB=HLB HLC=HLC HLD=HLD {self.label_free}\n"
 
         # Have the B factors been reset?
         if (self.breset != None): cmd+= "BFACTOR SET " + str(self.breset) +"\n"
@@ -174,6 +190,12 @@ optional.add_argument("--mode", metavar="HKRF",
                     default="HKRF",
                     choices = ['HKRF', 'RIGID', 'TLSR'])
 
+optional.add_argument("--labels", metavar="normal",
+                    help="Data labels (Default: normal. Options: normal, sad, hl)",
+                    type=str,
+                    default="normal",
+                    choices = ['normal', 'sad', 'hl'])
+
 optional.add_argument("--weight", metavar="0.5",
                     help="Weight matrix (Default: Auto)",
                     type=float,
@@ -215,7 +237,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     # Pass args to the main class
-    program = refmac(pdb = args.pdb, cycles = args.cycles, mtz = args.mtz, bref=args.bref, weight=args.weight, showcommand=args.showcommand, mode=args.mode, outputfilename=args.output, coot=args.coot, breset=args.breset, verbose=args.verbose, libin=args.libin, tlsin=args.tlsin)
+    program = refmac(pdb = args.pdb, cycles = args.cycles, mtz = args.mtz, bref=args.bref, weight=args.weight, showcommand=args.showcommand, mode=args.mode, outputfilename=args.output, coot=args.coot, breset=args.breset, verbose=args.verbose, libin=args.libin, tlsin=args.tlsin, labeltype=args.labels)
 
     # Run the main class
     program.run()
