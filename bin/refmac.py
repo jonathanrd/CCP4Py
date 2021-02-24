@@ -38,23 +38,30 @@ class refmac:
 
 
         # Run mtzinfo to get list of column headers
-        import subprocess,re
-        s = subprocess.check_output("mtzinfo " + self.mtz, shell = True)
+        import subprocess,re,sys
+        try:
+            s = subprocess.check_output("mtzinfo " + self.mtz, shell = True,
+            stderr = subprocess.DEVNULL)
+        except:
+            print("Error: Can't read MTZ file")
+            sys.exit()
+
         for line in s.decode('ascii').split("\n"):
             if re.match("^LABELS.*", line):
                 self.labels = line.split()[1:]
 
         # Using common free r labels, find and set the Free R label
-        default_free = ['FREE', 'RFREE', 'FREER', 'FreeR_flag']
+        default_free = ['FREE', 'RFREE', 'FREER', 'FreeR_flag', 'R-free-flags']
         try:
             self.label_free = "FREE=" + [i for i in self.labels if i in default_free][0]
         except:
             self.label_free = ""
 
         # Using common label names, find and set the correct label
+        # F-/SIGF-obs-filtered - Phenix
         if (self.labeltype == "normal" or self.labeltype == "hl"):
-            self.label_fp = "FP="+[i for i in self.labels if i in ['F', 'FP'] ][0]
-            self.label_sigfp = "SIGFP="+[i for i in self.labels if i in ['SIGF', 'SIGFP'] ][0]
+            self.label_fp = "FP="+[i for i in self.labels if i in ['F', 'FP', 'F-obs-filtered', 'FOBS'] ][0]
+            self.label_sigfp = "SIGFP="+[i for i in self.labels if i in ['SIGF', 'SIGFP', 'SIGF-obs-filtered', 'SIGFOBS'] ][0]
 
         if (self.labeltype == "sad"):
             self.label_fplus = "F+="+[ i for i in self.labels if i in ['F+', 'F(+)'] ][0]
@@ -147,8 +154,10 @@ class refmac:
 
         # Print to terminal
         if self.verbose:
-            print("Running Refmac..")
-            print("Log file at: " + self.outputfilename + ".log")
+            print("\nRunning Refmac..")
+            print("Log file at: " + self.outputfilename + ".log\n")
+            if self.label_free == "":
+                print("Warning: No FreeR set found.\n")
 
         # Run the command
         s = subprocess.check_output(cmd, shell = True)
