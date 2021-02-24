@@ -6,7 +6,7 @@ class refmac:
     def __init__(self, pdb, mtz, mode = "HKRF", cycles = 10,
     bref = "ISOT", weight = None, showcommand = False, outputfilename = None,
     coot = False, breset = None, verbose = False, custom = None, libin = None,
-    tlsin = None, labeltype = "normal", logview = None):
+    tlsin = None, labeltype = "normal", logview = None, ncs = "none"):
 
         # Generate timestamp
         import datetime
@@ -28,6 +28,7 @@ class refmac:
         self.tlsin = tlsin
         self.labeltype = labeltype
         self.logview = logview
+        self.ncs = ncs
 
         # Output filename, use timestamp if not set
         if outputfilename:
@@ -110,6 +111,12 @@ class refmac:
         if self.weight:
             cmd+= "WEIGHT MATRIX " + str(self.weight) + "\n"
 
+        # Automatic NCS
+        if self.ncs == "global":
+            cmd+= "ncsr global\n"
+        if self.ncs == "local":
+            cmd+= "ncsr local\n"
+
         # Any extra custom keywords?
         if self.custom:
             cmd+= str(self.custom) + "\n"
@@ -189,26 +196,45 @@ required.add_argument("--mtz", metavar = "input.mtz",
                     required = True,
                     help = "MTZ input file")
 
+common = parser.add_argument_group('common arguments')
 
-optional.add_argument("--cycles", metavar = "10",
+common.add_argument("--cycles", metavar = "10",
                     help = "No. of cycles [10]",
                     type = int, default=10)
 
-optional.add_argument("--breset", metavar = "30",
-                    help = "Reset B Factor at start to specified value",
-                    type = int, default = None)
-
-optional.add_argument("--bref",  metavar = "ISOT",
+common.add_argument("--bref",  metavar = "ISOT",
                     help = "B refinement (OVER, [ISOT], ANIS, MIXED)",
                     type = str,
                     choices = ['OVER', 'ISOT', 'ANIS', 'MIXED'],
                     default = 'ISOT')
+
+common.add_argument("--ncs",  metavar = "none",
+                    help = "Auto NCS ([none], local, global)",
+                    type = str,
+                    choices = ['none', 'local', 'global'],
+                    default = 'none')
+
+common.add_argument("--libin",
+                    help = "Add a dictionary.",
+                    type = str, default = None)
+
+common.add_argument("--logview",
+                    help = "Run CCP4 logview while refmac is running.",
+                    action = "store_true")
+
+common.add_argument("--coot",
+                    help = "Run Coot after refinement.",
+                    action = "store_true")
 
 optional.add_argument("--mode", metavar = "HKRF",
                     help = "Refinement Mode ([HKRF], RIGID, TLSR)",
                     type = str,
                     default = "HKRF",
                     choices = ['HKRF', 'RIGID', 'TLSR'])
+
+optional.add_argument("--breset", metavar = "30",
+                    help = "Reset B Factor at start to specified value",
+                    type = int, default = None)
 
 optional.add_argument("--labels", metavar = "normal",
                     help = "Refine with SAD or exp. data ([normal], sad, hl)",
@@ -230,20 +256,8 @@ optional.add_argument("--showcommand",
                     help = "Print the full refmac command and stop.",
                     action = "store_true")
 
-optional.add_argument("--logview",
-                    help = "Run CCP4 logview while refmac is running.",
-                    action = "store_true")
-
-optional.add_argument("--coot",
-                    help = "Run Coot after refinement.",
-                    action = "store_true")
-
 optional.add_argument("--custom",
                     help = "Pass custom keywords to refmac.",
-                    type = str, default = None)
-
-optional.add_argument("--libin",
-                    help = "Add a dictionary.",
                     type = str, default = None)
 
 optional.add_argument("--tlsin",
@@ -267,7 +281,7 @@ if __name__ == "__main__":
     mode = args.mode, outputfilename = args.output, coot = args.coot,
     breset = args.breset, verbose = args.verbose, libin = args.libin,
     tlsin = args.tlsin, labeltype = args.labels, logview = args.logview,
-    custom = args.custom)
+    custom = args.custom, ncs = args.ncs)
 
     # Run the main class
     program.run()
