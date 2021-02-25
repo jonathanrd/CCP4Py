@@ -3,7 +3,7 @@
 class pointless:
     ''' Pointless Wrapper '''
 
-    def __init__(self,mtzin,mtzout=None,spacegroup=None, verbose=False, showcommand=False, log=None, custom = None):
+    def __init__(self,mtzin,mtzout=None,spacegroup=None, verbose=False, showcommand=False, log=None, custom = None, logview = None):
 
         # Generate timestamp
         import datetime
@@ -17,20 +17,11 @@ class pointless:
         self.mtzout = mtzout
         self.log = log
         self.custom = custom
+        self.logview = logview
 
         if (self.mtzout == None): self.mtzout = f"{timestamp}-pointless.mtz"
         if (self.log == None):    self.log = f"{timestamp}-pointless.log"
 
-
-        if (self.verbose): print("Running Pointess..")
-
-        # Start the log file
-        import sys
-        log = open(self.log, "w")
-        log.write("Pointless run through python wrapper using command:\n\n")
-        log.write("pointlesswrap.py "+(" ".join(sys.argv[1:]))+"\n\n")
-        log.close()
-        if (self.verbose): print("Log file at: "+self.log)
 
 
 
@@ -61,6 +52,23 @@ class pointless:
 
         # Print the final command to terminal
         if (self.showcommand == True): print(cmd)
+
+
+        # Start the log file
+        import sys
+        log = open(self.log, "w")
+        log.write("Pointless run through python wrapper using command:\n\n")
+        log.write("pointlesswrap.py "+(" ".join(sys.argv[1:]))+"\n\n")
+        log.close()
+
+        if (self.verbose):
+            print("\nRunning Pointess..")
+            print("Log file at: "+self.log)
+
+        # Show logview?
+        if self.logview:
+            subprocess.Popen(["logview", self.log],
+            stdout = subprocess.DEVNULL, stderr = subprocess.DEVNULL)
 
         # Run the command
         s = subprocess.check_output(cmd, shell=True)
@@ -107,6 +115,12 @@ optional.add_argument("--custom",
                     type = str, default = None)
 
 
+optional.add_argument("--logview",
+                    help = "Run CCP4 logview while pointless is running.",
+                    action = "store_true")
+
+
+
 optional.add_argument("-v","--verbose", help="Verbose", action="store_true")
 
 parser._action_groups.append(optional)
@@ -118,7 +132,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     # Pass args to the main class
-    program = pointless(mtzin=args.mtz, mtzout=args.mtzout, verbose=args.verbose, showcommand=args.showcommand, spacegroup=args.spacegroup, log=args.logout, custom=args.custom)
+    program = pointless(mtzin=args.mtz, mtzout=args.mtzout, verbose=args.verbose, showcommand=args.showcommand, spacegroup=args.spacegroup, log=args.logout, custom=args.custom, logview = args.logview)
 
     # Run the main class
     program.run()
