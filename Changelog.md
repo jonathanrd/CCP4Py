@@ -2,6 +2,14 @@
 
 All notable changes to CCP4Py will be documented in this file.
 
+## 0.4.0 2021-02-25
+
+- refmac.py Added auto NCS option.
+- refmac.py Improved error handling for bad MTZ file.
+- refmac.py Added extra F, SIGF labels (phaser) to auto detect.
+- pointless.py Added logview option.
+- aimless.py Added option to save unmerged MTZ file.
+
 ## 0.3.0 2021-02-23
 
 - pointless.py Added ability to use custom commands.
