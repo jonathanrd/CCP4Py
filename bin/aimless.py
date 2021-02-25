@@ -3,7 +3,7 @@
 class aimless:
     ''' Aimless Wrapper '''
 
-    def __init__(self,mtzin,mtzout=None,reshigh=None, verbose=False, showcommand=False, log=None):
+    def __init__(self,mtzin,mtzout=None,reshigh=None, verbose=False, showcommand=False, log=None, unmerged=False):
 
         # Generate timestamp
         import datetime
@@ -16,6 +16,11 @@ class aimless:
         self.mtzin = mtzin
         self.mtzout = mtzout
         self.log = log
+
+        if unmerged:
+            self.unmerged = "UNMERGED"
+        else:
+            self.unmerged = ""
 
         if (self.mtzout == None): self.mtzout = f"{timestamp}-aimless.mtz"
         if (self.log == None): self.log = f"{timestamp}-aimless.log"
@@ -44,7 +49,7 @@ class aimless:
         "HKLOUT "+self.mtzout+" ")
 
         cmd += (f"<< eof >>{self.log}\n"
-        "output mtz MERGED\n")
+        f"output mtz MERGED {self.unmerged}\n")
 
         # Set a high resolution limit
         if (self.reshigh): cmd += f"resolution high {self.reshigh}\n"
@@ -95,6 +100,10 @@ optional.add_argument("--reshigh",
                     help="High resolution limit",
                     type=float, default=None)
 
+optional.add_argument("--nomerge",
+                    help="Also save unmerged reflections",
+                    action="store_true")
+
 optional.add_argument("--showcommand", help="Show AIMLESS command", action="store_true")
 
 optional.add_argument("-v","--verbose", help="Verbose", action="store_true")
@@ -108,7 +117,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     # Pass args to the main class
-    program = aimless(mtzin=args.mtz, mtzout=args.mtzout, verbose=args.verbose, showcommand=args.showcommand, reshigh=args.reshigh, log=args.logout)
+    program = aimless(mtzin=args.mtz, mtzout=args.mtzout, verbose=args.verbose, showcommand=args.showcommand, reshigh=args.reshigh, log=args.logout, unmerged = args.nomerge)
 
     # Run the main class
     program.run()
