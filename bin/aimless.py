@@ -3,7 +3,7 @@
 class aimless:
     ''' Aimless Wrapper '''
 
-    def __init__(self,mtzin,mtzout=None,reshigh=None, verbose=False, showcommand=False, log=None, unmerged=False):
+    def __init__(self, mtzin, mtzout = None, reshigh = None, verbose = False, showcommand = False, log = None, unmerged = False):
 
         # Generate timestamp
         import datetime
@@ -22,46 +22,55 @@ class aimless:
         else:
             self.unmerged = ""
 
-        if (self.mtzout == None): self.mtzout = f"{timestamp}-aimless.mtz"
-        if (self.log == None): self.log = f"{timestamp}-aimless.log"
+        # If custom mtz output not given, set as timestamp
+        if (self.mtzout == None):
+            self.mtzout = f"{timestamp}-aimless.mtz"
 
+        # If custom log output not given, set as timestamp
+        if (self.log == None):
+            self.log = f"{timestamp}-aimless.log"
 
-
-        if (self.verbose): print("Running Aimless..")
-
-        # Start the log file
-        import sys
-        log = open(self.log, "w")
-        log.write("Aimless run through python wrapper using command:\n\n")
-        log.write("aimlesswrap.py "+(" ".join(sys.argv[1:]))+"\n\n")
-        log.close()
-        if (self.verbose): print("Log file at: "+self.log)
 
 
 
     def run(self):
         ''' Run it! '''
-        import subprocess
+        import subprocess, sys
 
         # Setup the command options
         cmd = ("aimless "
-        "HKLIN "+self.mtzin+" "
-        "HKLOUT "+self.mtzout+" ")
+        f"HKLIN {self.mtzin} "
+        f"HKLOUT {self.mtzout} ")
 
-        cmd += (f"<< eof >>{self.log}\n"
-        f"output mtz MERGED {self.unmerged}\n")
+        # log output
+        cmd += f"<< eof >>{self.log}\n"
+
+        # mtz output, merged (and unmerged)
+        cmd += f"output mtz MERGED {self.unmerged}\n"
 
         # Set a high resolution limit
-        if (self.reshigh): cmd += f"resolution high {self.reshigh}\n"
+        if (self.reshigh):
+            cmd += f"resolution high {self.reshigh}\n"
 
         # End the command entry
-        cmd += ("\n"
-        "eof")
+        cmd += "\neof"
 
 
+        # Print the final command to terminal and stop
+        if (self.showcommand == True):
+            print(cmd)
+            sys.exit()
 
-        # Print the final command to terminal
-        if (self.showcommand == True): print(cmd)
+
+        # Start the log file
+        log = open(self.log, "w")
+        log.write("Aimless run through python wrapper using command:\n\n")
+        log.write("aimless.py "+(" ".join(sys.argv[1:]))+"\n\n")
+        log.close()
+
+        if (self.verbose):
+            print("\nRunning Aimless..")
+            print("Log file at: "+self.log)
 
         # Run the command
         s = subprocess.check_output(cmd, shell=True)
