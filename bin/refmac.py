@@ -56,18 +56,27 @@ class refmac:
             self.label_free = "FREE=" + [i for i in self.labels if i in default_free][0]
         except:
             self.label_free = ""
+            print("Warning: No free set found.")
 
         # Using common label names, find and set the correct label
         # F-/SIGF-obs-filtered - Phenix
         if (self.labeltype == "normal" or self.labeltype == "hl"):
-            self.label_fp = "FP="+[i for i in self.labels if i in ['F', 'FP', 'F-obs-filtered', 'FOBS'] ][0]
-            self.label_sigfp = "SIGFP="+[i for i in self.labels if i in ['SIGF', 'SIGFP', 'SIGF-obs-filtered', 'SIGFOBS'] ][0]
+            try:
+                self.label_fp = "FP="+[i for i in self.labels if i in ['F', 'FP', 'F-obs-filtered', 'FOBS'] ][0]
+                self.label_sigfp = "SIGFP="+[i for i in self.labels if i in ['SIGF', 'SIGFP', 'SIGF-obs-filtered', 'SIGFOBS'] ][0]
+            except:
+                print("Error: Could not identify F and/or SIGF columns in MTZ.")
+                sys.exit()
 
         if (self.labeltype == "sad"):
-            self.label_fplus = "F+="+[ i for i in self.labels if i in ['F+', 'F(+)'] ][0]
-            self.label_sigfplus = "SIGF+="+[ i for i in self.labels if i in ['SIGF+', 'SIGF(+)'] ][0]
-            self.label_fminus = "F-="+[ i for i in self.labels if i in ['F-', 'F(-)'] ][0]
-            self.label_sigfminus = "SIGF-="+[ i for i in self.labels if i in ['SIGF-', 'SIGF(-)'] ][0]
+            try:
+                self.label_fplus = "F+="+[ i for i in self.labels if i in ['F+', 'F(+)'] ][0]
+                self.label_sigfplus = "SIGF+="+[ i for i in self.labels if i in ['SIGF+', 'SIGF(+)'] ][0]
+                self.label_fminus = "F-="+[ i for i in self.labels if i in ['F-', 'F(-)'] ][0]
+                self.label_sigfminus = "SIGF-="+[ i for i in self.labels if i in ['SIGF-', 'SIGF(-)'] ][0]
+            except:
+                print("Error: Could not identify F+/F- and/or SIGF+/SIGF+ columns in MTZ.")
+                sys.exit()
 
     def run(self):
         ''' Run it! '''
