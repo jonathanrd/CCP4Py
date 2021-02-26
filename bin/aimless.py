@@ -3,7 +3,7 @@
 class aimless:
     ''' Aimless Wrapper '''
 
-    def __init__(self, mtzin, mtzout = None, reshigh = None, verbose = False, showcommand = False, log = None, unmerged = False):
+    def __init__(self, mtzin, mtzout = None, reshigh = None, verbose = False, showcommand = False, log = None, unmerged = False, logview = None):
 
         # Generate timestamp
         import datetime
@@ -16,6 +16,7 @@ class aimless:
         self.mtzin = mtzin
         self.mtzout = mtzout
         self.log = log
+        self.logview = logview
 
         if unmerged:
             self.unmerged = "UNMERGED"
@@ -72,6 +73,11 @@ class aimless:
             print("\nRunning Aimless..")
             print("Log file at: "+self.log)
 
+        # Show logview?
+        if self.logview:
+            subprocess.Popen(["logview", self.log],
+            stdout = subprocess.DEVNULL, stderr = subprocess.DEVNULL)
+
         # Run the command
         s = subprocess.check_output(cmd, shell=True)
         self.result = s.decode('ascii')
@@ -115,6 +121,10 @@ optional.add_argument("--nomerge",
 
 optional.add_argument("--showcommand", help="Show AIMLESS command", action="store_true")
 
+optional.add_argument("--logview",
+                    help = "Run CCP4 logview while pointless is running.",
+                    action = "store_true")
+
 optional.add_argument("-v","--verbose", help="Verbose", action="store_true")
 
 parser._action_groups.append(optional)
@@ -126,7 +136,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     # Pass args to the main class
-    program = aimless(mtzin=args.mtz, mtzout=args.mtzout, verbose=args.verbose, showcommand=args.showcommand, reshigh=args.reshigh, log=args.logout, unmerged = args.nomerge)
+    program = aimless(mtzin=args.mtz, mtzout=args.mtzout, verbose=args.verbose, showcommand=args.showcommand, reshigh=args.reshigh, log=args.logout, unmerged = args.nomerge, logview = args.logview)
 
     # Run the main class
     program.run()
