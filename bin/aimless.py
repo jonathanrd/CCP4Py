@@ -3,7 +3,7 @@
 class aimless:
     ''' Aimless Wrapper '''
 
-    def __init__(self, mtzin, mtzout = None, reshigh = None, verbose = False, showcommand = False, log = None, unmerged = False, logview = None):
+    def __init__(self, mtzin, mtzout = None, reshigh = None, verbose = False, showcommand = False, log = None, unmerged = False, logview = None, anomalous = None):
 
         # Generate timestamp
         import datetime
@@ -17,6 +17,7 @@ class aimless:
         self.mtzout = mtzout
         self.log = log
         self.logview = logview
+        self.anomalous = anomalous
 
         if unmerged:
             self.unmerged = "UNMERGED"
@@ -48,6 +49,10 @@ class aimless:
 
         # mtz output, merged (and unmerged)
         cmd += f"output mtz MERGED {self.unmerged}\n"
+
+        # Anomalous flag
+        if self.anomalous:
+            cmd += "ANOMALOUS ON\n"
 
         # Set a high resolution limit
         if (self.reshigh):
@@ -119,6 +124,10 @@ optional.add_argument("--nomerge",
                     help="Also save unmerged reflections",
                     action="store_true")
 
+optional.add_argument("--anom",
+                    help="Bijvoet-related reflections are treated as independent.",
+                    action="store_true")
+
 optional.add_argument("--showcommand", help="Show AIMLESS command", action="store_true")
 
 optional.add_argument("--logview",
@@ -136,7 +145,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     # Pass args to the main class
-    program = aimless(mtzin=args.mtz, mtzout=args.mtzout, verbose=args.verbose, showcommand=args.showcommand, reshigh=args.reshigh, log=args.logout, unmerged = args.nomerge, logview = args.logview)
+    program = aimless(mtzin=args.mtz, mtzout=args.mtzout, verbose=args.verbose, showcommand=args.showcommand, reshigh=args.reshigh, log=args.logout, unmerged = args.nomerge, logview = args.logview, anomalous = args.anom)
 
     # Run the main class
     program.run()
