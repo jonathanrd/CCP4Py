@@ -108,7 +108,7 @@ class refmac:
         elif self.labeltype == "sad":
             cmd += f"labin  {self.label_fplus} {self.label_sigfplus} {self.label_fminus} {self.label_sigfminus} {self.label_free}\n"
 
-        if self.labeltype == "hl":
+        elif self.labeltype == "hl":
             cmd += f"labin  {self.label_fp} {self.label_sigfp} HLA=HLA HLB=HLB HLC=HLC HLD=HLD {self.label_free}\n"
 
         # Have the B factors been reset?
