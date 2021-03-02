@@ -2,6 +2,12 @@
 
 All notable changes to CCP4Py will be documented in this file.
 
+# 0.5.0 2021-03-02
+
+- aimless.py Added logview option.
+- refmac.py Added error handling for MTZ column names.
+- aimless.py Added anomalous option.
+
 ## 0.4.0 2021-02-25
 
 - refmac.py Added auto NCS option.
