@@ -3,7 +3,7 @@
 class refmac:
     ''' Refmac5 Wrapper '''
 
-    def __init__(self, pdb, mtz, mode = "HKRF", cycles = 10,
+    def __init__(self, pdb, mtz, mode = "HKRF", cycles = 10, tlscycles = None,
     bref = "ISOT", weight = None, showcommand = False, outputfilename = None,
     coot = False, breset = None, verbose = False, custom = None, libin = None,
     tlsin = None, labeltype = "normal", logview = None, ncs = "none"):
@@ -16,6 +16,7 @@ class refmac:
         self.showcommand = showcommand
         self.mode = mode
         self.cycles = cycles
+        self.tlscycles = tlscycles
         self.bref = bref
         self.weight = weight
         self.pdb = pdb
@@ -100,6 +101,10 @@ class refmac:
 
         # Number of cycles
         cmd += f"ncyc {self.cycles}\n"
+
+        # Number of TLS cycles
+        if self.tlscycles:
+            cmd += f"REFI TLSC {self.tlscycles}"
 
         # Set the input labels
         if self.labeltype == "normal":
@@ -293,6 +298,10 @@ optional.add_argument("--tlsin",
                     help = "TLS definitions.",
                     type = str, default = None)
 
+optional.add_argument("--tlscycles",
+                    help = "Number of TLS cycles.", metavar = "0",
+                    type = int, default=None)
+
 optional.add_argument("-v", "--verbose",
                     help = "Verbose", action = "store_true")
 
@@ -305,7 +314,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     # Pass args to the main class
-    program = refmac(pdb = args.pdb, cycles = args.cycles, mtz = args.mtz,
+    program = refmac(pdb = args.pdb, cycles = args.cycles, tlscycles = args.tlscycles, mtz = args.mtz,
     bref = args.bref, weight = args.weight, showcommand = args.showcommand,
     mode = args.mode, outputfilename = args.output, coot = args.coot,
     breset = args.breset, verbose = args.verbose, libin = args.libin,
