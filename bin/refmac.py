@@ -175,19 +175,30 @@ class refmac:
         # Output the final refinement stats to the terminal
         if self.verbose:
             import re
-            shakes = open(self.outputfilename + ".log", "r")
-            for line in shakes:
-                if re.match("           R factor    .+", line):
-                    print ("       "+line.strip())
-                if re.match("             R free    .+", line):
-                    print ("         "+line.strip())
-                if re.match("     Rms BondLength    .+", line):
-                    print (" "+line.strip())
-                if re.match("      Rms BondAngle    .+", line):
-                    print ("  "+line.strip())
 
-            print("coot --pdb", self.outputfilename + ".pdb --auto",
-            self.outputfilename+".mtz")
+            # Read the log file
+            openlog = open(self.outputfilename + ".log", "r")
+            logtext = openlog.read()
+            openlog.close()
+
+            try:
+                # Regex to extract the important refinement values
+                rfactor = list(re.findall(r"^\s*R factor\s*([0-9.]+)\s+([0-9.]+)\s*$", logtext, re.MULTILINE)[0])
+                rfree = list(re.findall(r"^\s*R free\s*([0-9.]+)\s+([0-9.]+)\s*$", logtext, re.MULTILINE)[0])
+                bond_len = list(re.findall(r"^\s*Rms BondLength\s*([0-9.]+)\s+([0-9.]+)\s*$", logtext, re.MULTILINE)[0])
+                bond_ang = list(re.findall(r"^\s*Rms BondAngle\s*([0-9.]+)\s+([0-9.]+)\s*$", logtext, re.MULTILINE)[0])
+
+                # Print a table
+                print ("            Start   Final ")
+                print ("R factor   " + rfactor[0].ljust(8)  + rfactor[1].ljust(6))
+                print ("R free     " + rfree[0].ljust(8)    + rfree[1].ljust(6))
+                print ("Bond Len.  " + bond_len[0].ljust(8) + bond_len[1].ljust(6))
+                print ("Bond ang.  " + bond_ang[0].ljust(8) + bond_ang[1].ljust(6))
+            except:
+                print ("Error: Could not parse log file.")
+
+            print("\ncoot --pdb", self.outputfilename + ".pdb --auto",
+            self.outputfilename+".mtz\n")
 
         # Open the output files in Coot
         if self.coot:
