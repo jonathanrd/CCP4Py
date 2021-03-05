@@ -3,7 +3,7 @@
 class aimless:
     ''' Aimless Wrapper '''
 
-    def __init__(self, mtzin, mtzout = None, reshigh = None, verbose = False, showcommand = False, log = None, unmerged = False, logview = None, anomalous = None):
+    def __init__(self, mtzin, mtzout = None, reslog = None, reshigh = None, verbose = False, showcommand = False, log = None, unmerged = False, logview = None, anomalous = None):
 
         # Generate timestamp
         import datetime
@@ -11,6 +11,7 @@ class aimless:
 
         # Assign general inputs to class variables
         self.showcommand = showcommand
+        self.reslow = reslow
         self.reshigh = reshigh
         self.verbose = verbose
         self.mtzin = mtzin
@@ -53,6 +54,10 @@ class aimless:
         # Anomalous flag
         if self.anomalous:
             cmd += "ANOMALOUS ON\n"
+
+        # Set a low resolution limit
+        if (self.reslow):
+            cmd += f"resolution low {self.reslow}\n"
 
         # Set a high resolution limit
         if (self.reshigh):
@@ -116,6 +121,10 @@ optional.add_argument("--logout", metavar="output.log",
                     type=ascii,
                     help="Log filename (Default: YYMMDD-HHMMSS-aimless.log)")
 
+optional.add_argument("--reslow",
+                    help="Low resolution limit",
+                    type=float, default=None)
+
 optional.add_argument("--reshigh",
                     help="High resolution limit",
                     type=float, default=None)
@@ -145,7 +154,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     # Pass args to the main class
-    program = aimless(mtzin=args.mtz, mtzout=args.mtzout, verbose=args.verbose, showcommand=args.showcommand, reshigh=args.reshigh, log=args.logout, unmerged = args.nomerge, logview = args.logview, anomalous = args.anom)
+    program = aimless(mtzin=args.mtz, mtzout=args.mtzout, verbose=args.verbose, showcommand=args.showcommand, reslow=args.reslow, reshigh=args.reshigh, log=args.logout, unmerged = args.nomerge, logview = args.logview, anomalous = args.anom)
 
     # Run the main class
     program.run()
