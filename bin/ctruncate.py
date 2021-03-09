@@ -3,7 +3,7 @@
 class ctruncate:
     ''' Pointless Wrapper '''
 
-    def __init__(self,mtzin,mtzout, showcommand=False, log=None, verbose=False):
+    def __init__(self,mtzin,mtzout, showcommand=False, log=None, verbose=False, logview=None):
 
         # Generate timestamp
         import datetime
@@ -15,6 +15,7 @@ class ctruncate:
         self.mtzin = mtzin
         self.mtzout = mtzout
         self.log = log
+        self.logview = logview
 
         if (self.mtzout == None): self.mtzout = f"{timestamp}-ctruncate.mtz"
         if (self.log == None): self.log = f"{timestamp}-ctruncate.log"
@@ -22,15 +23,6 @@ class ctruncate:
 
 
         if (self.verbose): print("Running cTruncate..")
-
-        # Start the log file
-        import sys
-        log = open(self.log, "w")
-        log.write("ctruncate run through python wrapper using command:\n\n")
-        log.write("truncatewrap.py "+(" ".join(sys.argv[1:]))+"\n\n")
-        log.close()
-        if (self.verbose): print("Log file at: "+self.log)
-
 
 
     def run(self):
@@ -54,6 +46,19 @@ class ctruncate:
 
         # Print the final command to terminal
         if (self.showcommand == True): print(cmd)
+
+        # Start the log file
+        import sys
+        log = open(self.log, "w")
+        log.write("ctruncate run through python wrapper using command:\n\n")
+        log.write("truncatewrap.py "+(" ".join(sys.argv[1:]))+"\n\n")
+        log.close()
+        if (self.verbose): print("Log file at: "+self.log)
+
+        # Show logview?
+        if self.logview:
+            subprocess.Popen(["logview", self.log],
+            stdout = subprocess.DEVNULL, stderr = subprocess.DEVNULL)
 
         # Run the command
         s = subprocess.check_output(cmd, shell=True)
@@ -82,6 +87,9 @@ optional.add_argument("--logout", metavar="output.log",
                     type=ascii,
                     help="Log filename (Default: YYMMDD-HHMMSS-ctruncate.log)")
 
+optional.add_argument("--logview",
+                    help = "Run CCP4 logview while refmac is running.",
+                    action = "store_true")
 
 parser.add_argument("--showcommand", help="Show AIMLESS command", action="store_true")
 
@@ -97,7 +105,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     # Pass args to the main class
-    program = ctruncate(mtzin=args.mtz, mtzout=args.mtzout, verbose=args.verbose, showcommand=args.showcommand, log=args.logout)
+    program = ctruncate(mtzin=args.mtz, mtzout=args.mtzout, verbose=args.verbose, showcommand=args.showcommand, log=args.logout, logview=args.logview)
 
     # Run the main class
     program.run()
