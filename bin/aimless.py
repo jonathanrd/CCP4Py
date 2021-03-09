@@ -3,7 +3,7 @@
 class aimless:
     ''' Aimless Wrapper '''
 
-    def __init__(self, mtzin, mtzout = None, reslog = None, reshigh = None, verbose = False, showcommand = False, log = None, unmerged = False, logview = None, anomalous = None):
+    def __init__(self, mtzin, mtzout = None, reslow = None, reshigh = None, verbose = False, showcommand = False, log = None, unmerged = False, logview = None, anomalous = None):
 
         # Generate timestamp
         import datetime
