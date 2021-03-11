@@ -2,6 +2,13 @@
 
 All notable changes to CCP4Py will be documented in this file.
 
+# 0.6.0 2021-03-11
+
+- aimless.py Added low resolution option.
+- refmac.py Added TLS cycles option.
+- refmac.py Improved log parsing.
+- ctruncate.py Added logview option.
+
 # 0.5.0 2021-03-02
 
 - aimless.py Added logview option.
