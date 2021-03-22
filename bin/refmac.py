@@ -5,7 +5,7 @@ class refmac:
 
     def __init__(self, pdb, mtz, mode = "HKRF", cycles = 10, tlscycles = None,
     bref = "ISOT", weight = None, showcommand = False, outputfilename = None,
-    coot = False, breset = None, verbose = False, custom = None, libin = None,
+    coot = False, breset = None, custom = None, libin = None,
     tlsin = None, labeltype = "normal", logview = None, ncs = "none"):
 
         # Generate timestamp
@@ -23,7 +23,6 @@ class refmac:
         self.mtz = mtz
         self.coot = coot
         self.breset = breset
-        self.verbose = verbose
         self.custom = custom
         self.libin = libin
         self.tlsin = tlsin
@@ -56,8 +55,7 @@ class refmac:
         try:
             self.label_free = "FREE=" + [i for i in self.labels if i in default_free][0]
         except:
-            self.label_free = ""
-            print("Warning: No free set found.")
+            return
 
         # Using common label names, find and set the correct label
         # F-/SIGF-obs-filtered - Phenix
@@ -167,43 +165,65 @@ class refmac:
             stdout = subprocess.DEVNULL, stderr = subprocess.DEVNULL)
 
         # Print to terminal
-        if self.verbose:
-            print("\nRunning Refmac..")
-            print("Log file at: " + self.outputfilename + ".log\n")
-            if self.label_free == "":
-                print("Warning: No FreeR set found.\n")
+        bold      = "\033[1m"
+        italic    = "\033[3m"
+        underline = "\033[4m"
+        blink     = "\033[5m"
+        clear     = "\033[0m"
+        green     = "\033[32m"
+        red       = "\033[31m"
+
+        print(f"\n{underline}refmac.py{clear}\n")
+
+        if self.label_free == "":
+            print(f"{red}Warning:{clear} No free set found.\n")
+
+        print(f"Running... ", end='', flush=True)
 
         # Run the command
-        s = subprocess.check_output(cmd, shell = True)
-        self.result = s.decode('ascii')
+        try:
+            s = subprocess.check_output(cmd, shell = True, stderr = subprocess.DEVNULL)
+            self.result = s.decode('ascii')
+        except:
+            print(f"{red}Error!{clear} ({self.outputfilename}.log)\n")
+            sys.exit()
+
+
+        print(f"{green}Complete!{clear} ({self.outputfilename}.log)\n")
 
         # Output the final refinement stats to the terminal
-        if self.verbose:
-            import re
+        import re
 
-            # Read the log file
-            openlog = open(self.outputfilename + ".log", "r")
-            logtext = openlog.read()
-            openlog.close()
+        # Read the log file
+        openlog = open(self.outputfilename + ".log", "r")
+        logtext = openlog.read()
+        openlog.close()
 
-            try:
-                # Regex to extract the important refinement values
-                rfactor = list(re.findall(r"^\s*R factor\s*([0-9.]+)\s+([0-9.]+)\s*$", logtext, re.MULTILINE)[0])
-                rfree = list(re.findall(r"^\s*R free\s*([0-9.]+)\s+([0-9.]+)\s*$", logtext, re.MULTILINE)[0])
-                bond_len = list(re.findall(r"^\s*Rms BondLength\s*([0-9.]+)\s+([0-9.]+)\s*$", logtext, re.MULTILINE)[0])
-                bond_ang = list(re.findall(r"^\s*Rms BondAngle\s*([0-9.]+)\s+([0-9.]+)\s*$", logtext, re.MULTILINE)[0])
+        try:
+            # Regex to extract the important refinement values
+            rfactor = list(re.findall(r"^\s*R factor\s*([0-9.]+)\s+([0-9.]+)\s*$", logtext, re.MULTILINE)[0])
+            rfree = list(re.findall(r"^\s*R free\s*([0-9.]+)\s+([0-9.]+)\s*$", logtext, re.MULTILINE)[0])
+            bond_len = list(re.findall(r"^\s*Rms BondLength\s*([0-9.]+)\s+([0-9.]+)\s*$", logtext, re.MULTILINE)[0])
+            bond_ang = list(re.findall(r"^\s*Rms BondAngle\s*([0-9.]+)\s+([0-9.]+)\s*$", logtext, re.MULTILINE)[0])
 
-                # Print a table
-                print ("            Start   Final ")
-                print ("R factor   " + rfactor[0].ljust(8)  + rfactor[1].ljust(6))
-                print ("R free     " + rfree[0].ljust(8)    + rfree[1].ljust(6))
-                print ("Bond Len.  " + bond_len[0].ljust(8) + bond_len[1].ljust(6))
-                print ("Bond ang.  " + bond_ang[0].ljust(8) + bond_ang[1].ljust(6))
-            except:
-                print ("Error: Could not parse log file.")
+            if rfactor[0] > rfactor[1]:
+                rfactor_colour = green
+            else:
+                rfactor_colour = ""
 
-            print("\ncoot --pdb", self.outputfilename + ".pdb --auto",
-            self.outputfilename+".mtz\n")
+            if rfree[0] > rfree[1]:
+                rfree_colour = green
+            else:
+                rfree_colour = ""
+
+            # Print a table
+            print (f"  Rwork/Rfree {rfactor[0]}/{rfree[0]} -> {rfactor_colour}{rfactor[1]}{clear}/{rfree_colour}{rfree[1]}{clear}")
+            print (f"Bond RMSD Å/° {bond_len[0]}/{bond_ang[0]} -> {bond_len[1]}/{bond_ang[1]}")
+        except:
+            print ("Error: Could not parse log file.")
+
+        print("\ncoot --pdb", self.outputfilename + ".pdb --auto",
+        self.outputfilename+".mtz\n")
 
         # Open the output files in Coot
         if self.coot:
@@ -302,8 +322,6 @@ optional.add_argument("--tlscycles",
                     help = "Number of TLS cycles.", metavar = "0",
                     type = int, default=None)
 
-optional.add_argument("-v", "--verbose",
-                    help = "Verbose", action = "store_true")
 
 parser._action_groups.append(optional)
 
@@ -317,7 +335,7 @@ if __name__ == "__main__":
     program = refmac(pdb = args.pdb, cycles = args.cycles, tlscycles = args.tlscycles, mtz = args.mtz,
     bref = args.bref, weight = args.weight, showcommand = args.showcommand,
     mode = args.mode, outputfilename = args.output, coot = args.coot,
-    breset = args.breset, verbose = args.verbose, libin = args.libin,
+    breset = args.breset, libin = args.libin,
     tlsin = args.tlsin, labeltype = args.labels, logview = args.logview,
     custom = args.custom, ncs = args.ncs)
 
