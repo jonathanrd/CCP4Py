@@ -27,7 +27,7 @@ git pull
 
 ### Refining a model
 ```
-refmac.py --pdb model.pdb --mtz data.mtz -v
+refmac.py --pdb model.pdb --mtz data.mtz
 ```
 
 ### Going from integrated data to a refined model
@@ -50,8 +50,6 @@ phaser.py --pdb model.pdb --mtz free.mtz --output phaser
 # Refine the model and open coot
 refmac.py --pdb phaser.1.pdb --mtz free.mtz --coot
 
-# View the refmac log using the old CCP4 way
-logview 210222-221251-refmac.log
 ```
 
 
@@ -63,20 +61,23 @@ required arguments:
   --pdb input.pdb  PDB input file
   --mtz input.mtz  MTZ input file
 
+common arguments:
+  --cycles 10      No. of cycles [10]
+  --bref ISOT      B refinement (OVER, [ISOT], ANIS, MIXED)
+  --ncs none       Auto NCS ([none], local, global)
+  --libin LIBIN    Add a dictionary.
+  --logview        Run CCP4 logview while refmac is running.
+  --coot           Run Coot after refinement.
+
 optional arguments:
   -h, --help       show this help message and exit
-  --cycles 10      No. of cycles [10]
-  --breset 30      Reset B Factor at start to specified value
-  --bref ISOT      B refinement (OVER, [ISOT], ANIS, MIXED)
   --mode HKRF      Refinement Mode ([HKRF], RIGID, TLSR)
+  --breset 30      Reset B Factor at start to specified value
   --labels normal  Refine with SAD or exp. data ([normal], sad, hl)
   --weight 0.5     Weight matrix [auto]
   --output         Outfile file name [YYMMDD-HHMMSS-refmac]
   --showcommand    Print the full refmac command and stop.
-  --logview        Run CCP4 logview while refmac is running.
-  --coot           Run Coot after refinement.
   --custom CUSTOM  Pass custom keywords to refmac.
-  --libin LIBIN    Add a dictionary.
   --tlsin TLSIN    TLS definitions.
-  -v, --verbose    Verbose
+  --tlscycles 0    Number of TLS cycles.
 ```
