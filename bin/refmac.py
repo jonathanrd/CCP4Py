@@ -173,7 +173,7 @@ class refmac:
         green     = "\033[32m"
         red       = "\033[31m"
 
-        print(f"\n{underline}refmac.py{clear}\n")
+        print(f"\n{underline}refmac.py{clear} > {self.outputfilename}.log\n")
 
         if self.label_free == "":
             print(f"{red}Warning:{clear} No free set found.\n")
@@ -185,11 +185,11 @@ class refmac:
             s = subprocess.check_output(cmd, shell = True, stderr = subprocess.DEVNULL)
             self.result = s.decode('ascii')
         except:
-            print(f"{red}Error!{clear} ({self.outputfilename}.log)\n")
+            print(f"{red}Error!{clear}\n")
             sys.exit()
 
 
-        print(f"{green}Complete!{clear} ({self.outputfilename}.log)\n")
+        print(f"{green}Complete!{clear}\n")
 
         # Output the final refinement stats to the terminal
         import re
@@ -217,8 +217,8 @@ class refmac:
                 rfree_colour = ""
 
             # Print a table
-            print (f"  Rwork/Rfree {rfactor[0]}/{rfree[0]} -> {rfactor_colour}{rfactor[1]}{clear}/{rfree_colour}{rfree[1]}{clear}")
-            print (f"Bond RMSD Å/° {bond_len[0]}/{bond_ang[0]} -> {bond_len[1]}/{bond_ang[1]}")
+            print (f"  {bold}Rwork/Rfree{clear} {rfactor[0]}/{rfree[0]} -> {rfactor_colour}{rfactor[1]}{clear}/{rfree_colour}{rfree[1]}{clear}")
+            print (f"{bold}Bond RMSD Å/°{clear} {bond_len[0]}/{bond_ang[0]} -> {bond_len[1]}/{bond_ang[1]}")
         except:
             print ("Error: Could not parse log file.")
 
