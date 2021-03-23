@@ -5,7 +5,7 @@ Unofficial python wrappers for CCP4 programs. Designed to make the task of runni
 Currently supports: **pointless**, **aimless**, **ctruncate**, **phaser**, and **refmac**.
 
 # Installation
-Requires [CCP4](http://www.ccp4.ac.uk/download/).
+Requires [CCP4](http://www.ccp4.ac.uk/download/) to be installed first.
 
 Clone this Git repo to your user folder:
 ```
@@ -13,11 +13,11 @@ cd ~/
 git clone https://github.com/jonathanrd/CCP4Py.git
 ```
 
-Add the following to your .bashrc (Linux) or .bash_profile (Mac)
+Add the following to your .bashrc (Linux) or .bash_profile (Mac) and restart your terminal.
 ```
-export PATH=/Users/YourUsername/CCP4Py/bin:$PATH
+export PATH=/Users/YourUserFolder/CCP4Py/bin:$PATH
 ```
-All changes are added to Changelog.md, to update in future:
+All script changes are added to Changelog.md, to update in future:
 ```
 cd ~/CCP4Py
 git pull
@@ -29,6 +29,8 @@ git pull
 ```
 refmac.py --pdb model.pdb --mtz data.mtz
 ```
+Note: Running refmac.py uses the same default settings as running a refmac job from the CCP4i GUI.
+
 
 ### Going from integrated data to a refined model
 ```
