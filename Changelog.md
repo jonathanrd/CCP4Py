@@ -2,6 +2,10 @@
 
 All notable changes to CCP4Py will be documented in this file.
 
+# 0.7.0 2021-03-21
+- refmac.py Made verbose by default.
+- refmac.py Improved error handling.
+
 # 0.6.0 2021-03-11
 
 - aimless.py Added low resolution option.
