@@ -171,9 +171,11 @@ class refmac:
         blink     = "\033[5m"
         clear     = "\033[0m"
         green     = "\033[32m"
+        yellow    = "\033[33m"
         red       = "\033[31m"
+        purple    = "\033[35m"
 
-        print(f"\n{underline}refmac.py{clear} > {self.outputfilename}.log\n")
+        print(f"\n{underline}refmac.py{clear} > {purple}{self.outputfilename}.log{clear}\n")
 
         if self.label_free == "":
             print(f"{red}Warning:{clear} No free set found.\n")
