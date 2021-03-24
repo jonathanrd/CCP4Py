@@ -77,6 +77,16 @@ class refmac:
                 print("Error: Could not identify F+/F- and/or SIGF+/SIGF+ columns in MTZ.")
                 sys.exit()
 
+        if (self.labeltype == "hl"):
+            try:
+                self.label_hla = "HLA="+[ i for i in self.labels if i in ['HLA'] ][0]
+                self.label_hlb = "HLB="+[ i for i in self.labels if i in ['HLB'] ][0]
+                self.label_hlc = "HLC="+[ i for i in self.labels if i in ['HLC'] ][0]
+                self.label_hld = "HLD="+[ i for i in self.labels if i in ['HLD'] ][0]
+            except:
+                print("Error: Could not identify HLA/HLB/HLC/HLD columns in MTZ.")
+                sys.exit()
+
     def run(self):
         ''' Run it! '''
         import subprocess
@@ -112,7 +122,7 @@ class refmac:
             cmd += f"labin  {self.label_fplus} {self.label_sigfplus} {self.label_fminus} {self.label_sigfminus} {self.label_free}\n"
 
         elif self.labeltype == "hl":
-            cmd += f"labin  {self.label_fp} {self.label_sigfp} HLA=HLA HLB=HLB HLC=HLC HLD=HLD {self.label_free}\n"
+            cmd += f"labin  {self.label_fp} {self.label_sigfp} {self.label_hla} {self.label_hlb} {self.label_hlc} {self.label_hld} {self.label_free}\n"
 
         # Have the B factors been reset?
         if self.breset != None:
