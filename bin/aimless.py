@@ -3,7 +3,7 @@
 class aimless:
     ''' Aimless Wrapper '''
 
-    def __init__(self, mtzin, mtzout = None, reslow = None, reshigh = None, verbose = False, showcommand = False, log = None, unmerged = False, logview = None, anomalous = None):
+    def __init__(self, mtzin, mtzout = None, reslow = None, reshigh = None,  showcommand = False, log = None, unmerged = False, logview = None, anomalous = None):
 
         # Generate timestamp
         import datetime
@@ -13,7 +13,6 @@ class aimless:
         self.showcommand = showcommand
         self.reslow = reslow
         self.reshigh = reshigh
-        self.verbose = verbose
         self.mtzin = mtzin
         self.mtzout = mtzout
         self.log = log
@@ -79,26 +78,42 @@ class aimless:
         log.write("aimless.py "+(" ".join(sys.argv[1:]))+"\n\n")
         log.close()
 
-        if (self.verbose):
-            print("\nRunning Aimless..")
-            print("Log file at: "+self.log)
-
         # Show logview?
         if self.logview:
             subprocess.Popen(["logview", self.log],
             stdout = subprocess.DEVNULL, stderr = subprocess.DEVNULL)
 
+        # Print to terminal
+        bold      = "\033[1m"
+        italic    = "\033[3m"
+        underline = "\033[4m"
+        blink     = "\033[5m"
+        clear     = "\033[0m"
+        green     = "\033[32m"
+        yellow    = "\033[33m"
+        red       = "\033[31m"
+        purple    = "\033[35m"
+
+        print(f"\n{underline}aimless.py{clear} > {purple}{self.log}{clear}\n")
+
+        print(f"Running... ", end='', flush=True)
+
         # Run the command
-        s = subprocess.check_output(cmd, shell=True)
-        self.result = s.decode('ascii')
+        try:
+            s = subprocess.check_output(cmd, shell = True, stderr = subprocess.DEVNULL)
+            self.result = s.decode('ascii')
+        except:
+            print(f"{red}Error!{clear}\n")
+            sys.exit()
+
+        print(f"{green}Complete!{clear}\n")
 
         # Output the final refinement stats to the terminal
-        if (self.verbose):
-            import re
-            shakes = open(self.log, "r")
-            for line in shakes:
-                if re.match("           R factor    .+", line):
-                    print ("       "+line.strip())
+        import re
+        shakes = open(self.log, "r")
+        for line in shakes:
+            if re.match("           R factor    .+", line):
+                print ("       "+line.strip())
 
 
 import argparse
@@ -143,8 +158,6 @@ optional.add_argument("--logview",
                     help = "Run CCP4 logview while pointless is running.",
                     action = "store_true")
 
-optional.add_argument("-v","--verbose", help="Verbose", action="store_true")
-
 parser._action_groups.append(optional)
 
 # If running directly (not imported)
@@ -154,7 +167,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     # Pass args to the main class
-    program = aimless(mtzin=args.mtz, mtzout=args.mtzout, verbose=args.verbose, showcommand=args.showcommand, reslow=args.reslow, reshigh=args.reshigh, log=args.logout, unmerged = args.nomerge, logview = args.logview, anomalous = args.anom)
+    program = aimless(mtzin=args.mtz, mtzout=args.mtzout,  showcommand=args.showcommand, reslow=args.reslow, reshigh=args.reshigh, log=args.logout, unmerged = args.nomerge, logview = args.logview, anomalous = args.anom)
 
     # Run the main class
     program.run()

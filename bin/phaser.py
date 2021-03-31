@@ -3,7 +3,7 @@
 class phaser:
     ''' Phaser Wrapper '''
 
-    def __init__(self, mtzin, showcommand = False, log = None, verbose = False,
+    def __init__(self, mtzin, showcommand = False, log = None,
     output = None, identity = 50, pdbin = None, totalmw = None, nmol = 1,
     logview = None, custom = None):
 
@@ -13,7 +13,6 @@ class phaser:
 
         # Assign general inputs to class variables
         self.showcommand = showcommand
-        self.verbose = verbose
         self.mtzin = mtzin
         self.log = log
         self.output = output
@@ -88,10 +87,6 @@ class phaser:
         log.write("phaserwrap.py "+(" ".join(sys.argv[1:]))+"\n\n")
         log.close()
 
-        if self.verbose:
-            print("Running phaser..")
-            print("Log file at: "+self.log)
-            print("PDB Total MW: "+self.totalmw)
 
 
         # Show logview?
@@ -99,19 +94,44 @@ class phaser:
             subprocess.Popen(["logview", self.log],
             stdout = subprocess.DEVNULL, stderr = subprocess.DEVNULL)
 
+        # Print to terminal
+        bold      = "\033[1m"
+        italic    = "\033[3m"
+        underline = "\033[4m"
+        blink     = "\033[5m"
+        clear     = "\033[0m"
+        green     = "\033[32m"
+        yellow    = "\033[33m"
+        red       = "\033[31m"
+        purple    = "\033[35m"
+
+        print(f"\n{underline}phaser.py{clear} > {purple}{self.log}{clear}\n")
+
+        print(f"PDB Total MW: {self.totalmw}")
+        print(f"No. of models to search for: {self.nmol}\n")
+
+        print(f"Running... ", end='', flush=True)
+
         # Run the command
-        s = subprocess.check_output(cmd, shell = True)
-        self.result = s.decode('ascii')
+        try:
+            s = subprocess.check_output(cmd, shell = True, stderr = subprocess.DEVNULL)
+            self.result = s.decode('ascii')
+        except:
+            print(f"{red}Error!{clear}\n")
+            sys.exit()
+
+        print(f"{green}Complete!{clear}\n")
 
         # Output the final refinement stats to the terminal
-        if self.verbose:
-            import re
-            shakes = open(self.log, "r")
-            for line in shakes:
-                if re.match("\*\* Solution written to PDB file:.*", line):
-                    print (line.strip())
-                if re.match("\*\* Solution written to MTZ file:.*", line):
-                    print (line.strip())
+        import re
+        shakes = open(self.log, "r")
+        for line in shakes:
+            if re.match("\*\* Solution written to PDB file:.*", line):
+                print (line.strip())
+            if re.match("\*\* Solution written to MTZ file:.*", line):
+                print (line.strip())
+            if re.match("\*\* Sorry - No solution.*", line):
+                print ("No solution found :(")
 
 
 
@@ -161,10 +181,6 @@ optional.add_argument("--showcommand",
                     help="Show phaser command",
                     action="store_true")
 
-optional.add_argument("-v", "--verbose",
-                    help = "Verbose",
-                    action = "store_true")
-
 parser._action_groups.append(optional)
 
 # If running directly (not imported)
@@ -174,7 +190,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     # Pass args to the main class
-    program = phaser(mtzin = args.mtz, verbose = args.verbose, showcommand = args.showcommand, log = args.log, output = args.output, identity = args.identity, pdbin = args.pdb, totalmw = args.totalmw, nmol = args.nmol, logview = args.logview, custom = args.custom)
+    program = phaser(mtzin = args.mtz, showcommand = args.showcommand, log = args.log, output = args.output, identity = args.identity, pdbin = args.pdb, totalmw = args.totalmw, nmol = args.nmol, logview = args.logview, custom = args.custom)
 
     # Run the main class
     program.run()
