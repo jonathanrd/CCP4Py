@@ -2,6 +2,13 @@
 
 All notable changes to CCP4Py will be documented in this file.
 
+# 0.8.0 2021-03-31
+- refmac.py Added error handling for HL labels.
+- phaser.py Improved terminal output, verbose by default.
+- aimless.py Improved terminal output, verbose by default.
+- pointless.py Improved terminal output, verbose by default.
+- ctruncate.py Improved terminal output, verbose by default.
+
 # 0.7.0 2021-03-21
 - refmac.py Made verbose by default.
 - refmac.py Improved error handling.
