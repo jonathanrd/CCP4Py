@@ -3,7 +3,7 @@
 class aimless:
     ''' Aimless Wrapper '''
 
-    def __init__(self, mtzin, mtzout = None, reslow = None, reshigh = None,  showcommand = False, log = None, unmerged = False, logview = None, anomalous = None):
+    def __init__(self, mtzin, mtzout = None, reslow = None, reshigh = None,  showcommand = False, log = None, unmerged = False, logview = None, anomalous = None, custom = None):
 
         # Generate timestamp
         import datetime
@@ -18,6 +18,7 @@ class aimless:
         self.log = log
         self.logview = logview
         self.anomalous = anomalous
+        self.custom = custom
 
         if unmerged:
             self.unmerged = "UNMERGED"
@@ -61,6 +62,10 @@ class aimless:
         # Set a high resolution limit
         if (self.reshigh):
             cmd += f"resolution high {self.reshigh}\n"
+
+        # Any extra custom keywords?
+        if self.custom:
+            cmd+= str(self.custom) + "\n"
 
         # End the command entry
         cmd += "\neof"
@@ -152,6 +157,10 @@ optional.add_argument("--anom",
                     help="Bijvoet-related reflections are treated as independent.",
                     action="store_true")
 
+optional.add_argument("--custom",
+                    help = "Pass custom keywords to refmac.",
+                    type = str, default = None)
+
 optional.add_argument("--showcommand", help="Show AIMLESS command", action="store_true")
 
 optional.add_argument("--logview",
@@ -167,7 +176,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     # Pass args to the main class
-    program = aimless(mtzin=args.mtz, mtzout=args.mtzout,  showcommand=args.showcommand, reslow=args.reslow, reshigh=args.reshigh, log=args.logout, unmerged = args.nomerge, logview = args.logview, anomalous = args.anom)
+    program = aimless(mtzin=args.mtz, mtzout=args.mtzout,  showcommand=args.showcommand, reslow=args.reslow, reshigh=args.reshigh, log=args.logout, unmerged = args.nomerge, logview = args.logview, anomalous = args.anom, custom = args.custom)
 
     # Run the main class
     program.run()
