@@ -3,7 +3,7 @@
 class pdbset:
     ''' PDBSET Wrapper '''
 
-    def __init__(self, pdb, outputfilename = None, showcommand = False, atrenumber = False, custom = None, renumber = False, breset = False, occupancy = False):
+    def __init__(self, pdb, outputfilename = None, showcommand = False, atrenumber = False, custom = None, renumber = None, breset = False, occupancy = False):
 
         # Generate timestamp
         import datetime
@@ -128,8 +128,7 @@ common.add_argument("--occupancy",
 
 common.add_argument("--renumber", metavar = "A,1",
                     help = "e.g. Renumber residues in a chain A starting from number 1.",
-                    type = str,
-                    default = "A")
+                    type = str)
 
 common.add_argument("--atrenumber",
                     help = "Renumber all atoms.",
